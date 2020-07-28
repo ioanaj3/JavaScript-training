@@ -104,8 +104,10 @@ let arr = [83568,
 
     for(let number in arr){
         console.log(typeof parseInt(number))
-        requiredFuel= Math.floor(parseInt(number)/3) - 2 
-        fuelSum = fuelSum + requiredFuel
-        i = i+1
+        if (Math.floor(parseInt(number)/3) - 2 > 0){
+            requiredFuel= Math.floor(parseInt(number)/3) - 2 
+            fuelSum = fuelSum + requiredFuel
+        }
+        
     }
     console.log(fuelSum)
