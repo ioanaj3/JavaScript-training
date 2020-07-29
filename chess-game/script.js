@@ -94,31 +94,46 @@ for (let i = 0; i < 8; i++) {
 let table_parent = document.getElementsByClassName('table-container')[0]
 var boxes = []
 
-for (let j = 1; j <= 64; j++) {
-    boxes[j] = document.createElement('div');
-
-    table_parent.appendChild(boxes[j])
-
-    boxes[j].classList.add('box')
-
-    boxes[j].setAttribute('data-i', Math.floor(j / 8));
-    boxes[j].setAttribute('data-j', j % 8);
-
-    if ((j >= 1 && j <= 8) || (j >= 17 && j <= 24) || (j >= 33 && j <= 40) || (j >= 49 && j <= 56)) {
-        if (j % 2 == 0)
-            boxes[j].classList.add('dark-box')
-        else
-            boxes[j].classList.add('light-box')
-    }
-    else {
-        if (j % 2 != 0)
-            boxes[j].classList.add('dark-box')
-        else
-            boxes[j].classList.add('light-box')
+for (let i = 0; i<8; i++){
+    for (let j = 0; j < 8; j++) {
+        boxes[i][j] = document.createElement('div');
+    
+        table_parent.appendChild(boxes[i][j])
+    
+        boxes[i][j].classList.add('box')
+    
+        boxes[i][j].setAttribute('data-i', i);
+        boxes[i][j].setAttribute('data-j', j);
+        if(i % 2 == 0){
+            if(j % 2 == 0){
+                boxes[i][j].classList.add('dark-box')
+            }
+            else
+                boxes[i][j].classList.add('light-box')
+        }
+        else{
+            if(j % 2 == 0){
+                boxes[i][j].classList.add('light-box')
+            }
+            else
+                boxes[i][j].classList.add('dark-box')
+        }
+        // if ((j >= 0 && j < 8) || (j >= 16 && j < 24) || (j >= 34 && j < 40) || (j >= 50 && j < 56)) {
+        //     if (j % 2 == 0)
+        //         boxes[j].classList.add('dark-box')
+        //     else
+        //         boxes[j].classList.add('light-box')
+        // }
+        // else {
+        //     if (j % 2 != 0)
+        //         boxes[j].classList.add('dark-box')
+        //     else
+        //         boxes[j].classList.add('light-box')
+        // }
     }
 }
-// }
 
+// }
 
 
 
@@ -258,16 +273,24 @@ for (let i = 1; i <= 64; i++) {
     }
 }
 
-const initialState = [
-    ['R', 'H', 'WB'],
-    ['P', 'P'],
-    ['', '', '', '']
-];
+// Create the damn table
+big_table = new ChessTable()
+big_table.chess_matrix = [
+    [player_top_pieces[1], player_top_pieces[2], player_top_pieces[3], player_top_pieces[4], player_top_pieces[5], player_top_pieces[6], player_top_pieces[7], player_top_pieces[8]], 
+    [player_top_pieces[9], player_top_pieces[10], player_top_pieces[11], player_top_pieces[12], player_top_pieces[13], player_top_pieces[14], player_top_pieces[15], player_top_pieces[16]],
+    [],
+    [], 
+    [],
+    [],
+    [player_bottom_pieces[1], player_bottom_pieces[2], player_bottom_pieces[3], player_bottom_pieces[4], player_bottom_pieces[5], player_bottom_pieces[6], player_bottom_pieces[7], player_bottom_pieces[8]], 
+    [player_bottom_pieces[9], player_bottom_pieces[10], player_bottom_pieces[11], player_bottom_pieces[12], player_bottom_pieces[13], player_bottom_pieces[14], player_bottom_pieces[15], player_bottom_pieces[16]],
+]
+console.log(big_table)
+
 
 
 // Possible moves
 
-// let current_piece
 
 let pawns = Array.from(document.getElementsByClassName("pawn"));
 console.log(pawns)
@@ -281,21 +304,7 @@ pawns.forEach(element => {
 })
 
 function movePawns(elem) {
-    //     // let classes = pawn.classList
-    //     // console.log(classes)
-    //     //momentan, doar functionalitatea de move
-    // //    genericPawn.number_of_moves ++;
-    // //    console.log(genericPawn.number_of_moves)
-
-    //     // for(let i=0; i<length(moves); i++){
-    //     //     if(moves[i] == "top-2"){
-    //     //         parent = 
-    //     //         // if pozitie initiala
-    //     //         // if niciun elem in fata
-    //     //     }
-    //     // }
-    // console.log(elem)
-    console.log("hai")
+    console.log("hei")
 }
 
 

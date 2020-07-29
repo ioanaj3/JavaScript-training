@@ -1,3 +1,7 @@
+class ChessTable{
+    chess_matrix =[]
+}
+
 class chessPiece{
     constructor(row, column, img, color){
         this.row = row;
