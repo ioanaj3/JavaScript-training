@@ -37,7 +37,7 @@ body{
     grid-column-end:3;
     background-color: #987284;
     display: grid;
-    grid-template-columns: repeat(8, auto);
+    grid-template-columns: repeat(8, 1fr);
     grid-template-rows: auto;
     grid-auto-flow: row;
     align-items: stretch;
@@ -50,7 +50,7 @@ body{
     background-color: #987284;
     display: grid;
     grid-template-columns: auto;
-    grid-template-rows: repeat(8, auto);
+    grid-template-rows: repeat(8, 1fr);
     grid-auto-flow: column;
     align-items: stretch;
 }
@@ -63,7 +63,7 @@ body{
     background-color: #987284;
     display: grid;
     grid-template-columns: auto;
-    grid-template-rows: repeat(8, auto);
+    grid-template-rows: repeat(8, 1fr);
     grid-auto-flow: column;
     align-items: stretch;
 }
@@ -75,7 +75,7 @@ body{
     grid-column-end:3;
     background-color: #987284;
     display: grid;
-    grid-template-columns: repeat(8, auto);
+    grid-template-columns: repeat(8, 1fr);
     grid-template-rows: auto;
     grid-auto-flow: row;
     align-items: stretch;
@@ -88,13 +88,14 @@ body{
     grid-column-end:3;
     background-color: white;
     display: grid;
-    grid-template-columns: repeat(8, auto);
-    grid-template-rows: repeat(8, auto);
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
     align-items: stretch;
 }
 .top-column, .bottom-column, .left-row, .right-row, .box{
     text-align: center;
     align-self: center;
+    color: #333;
 }
 
 .box{
@@ -104,6 +105,8 @@ body{
     justify-content: center;
     align-items: center;
     align-content: center;
+    border: solid #fff 1px;
+
 }
 .dark-box{
     background-color: #7D5F6D;
@@ -117,18 +120,14 @@ body{
     width:45%;
 }
 
-.box:hover{
+.box:hover, .current-move{
     background-color: #210B2C;
 }
-.box-clicked{
-    
-}
+
 
 .possible-move{
-    background-color: #BC96E6;
-}
-.white-pawn-9{
-    color: white;
+    background-color: #D5C3CD;
+    
 }
 
 

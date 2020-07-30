@@ -18,298 +18,75 @@
 //  }
 // setTimeout(countdown,1000)
 
-// Generate Chess Table
-//  generateChessTable()
+// let game = new ChessGame();
 
-//  function generateChessTable(){
-// Create parent div 
-let chess_table = document.createElement('div');
-document.getElementsByTagName('body')[0].appendChild(chess_table);
-chess_table.classList.add("chess-table")
+// Generate chess table visually
+let boxes = generateChessTable();
 
-// Top container - create
-let top_container = document.createElement('div');
-document.getElementsByClassName('chess-table')[0].appendChild(top_container);
-top_container.classList.add("top-container")
-
-// Left container - create
-let left_container = document.createElement('div');
-document.getElementsByClassName('chess-table')[0].appendChild(left_container);
-left_container.classList.add("left-container")
-
-// Right container - create
-let right_container = document.createElement('div');
-document.getElementsByClassName('chess-table')[0].appendChild(right_container);
-right_container.classList.add("right-container")
-
-// Bottom container - create
-let bottom_container = document.createElement('div');
-document.getElementsByClassName('chess-table')[0].appendChild(bottom_container);
-bottom_container.classList.add("bottom-container")
-
-// Table container - create
-let table_container = document.createElement('div');
-// table_container.innerHTML = "terog"
-document.getElementsByClassName('chess-table')[0].appendChild(table_container);
-table_container.classList.add("table-container")
-
-
-// Populate top, bottom, left and right columns
-let top_columns = []
-let bottom_columns = []
-let left_rows = []
-let right_rows = []
-let letter = "A"
-let number = 1
-let top_parent = document.getElementsByClassName('top-container')[0]
-let bottom_parent = document.getElementsByClassName('bottom-container')[0]
-let left_parent = document.getElementsByClassName('left-container')[0]
-let right_parent = document.getElementsByClassName('right-container')[0]
-for (let i = 0; i < 8; i++) {
-    top_columns[i] = document.createElement('div');
-    bottom_columns[i] = document.createElement('div');
-    left_rows[i] = document.createElement('div')
-    right_rows[i] = document.createElement('div')
-
-    top_columns[i].innerHTML = letter
-    bottom_columns[i].innerHTML = letter
-    left_rows[i].innerHTML = number
-    right_rows[i].innerHTML = number
-
-    letter = String.fromCharCode(letter.charCodeAt(0) + 1)
-    number = number + 1
-
-    top_parent.appendChild(top_columns[i]);
-    bottom_parent.appendChild(bottom_columns[i]);
-    left_parent.appendChild(left_rows[i])
-    right_parent.appendChild(right_rows[i])
-
-    top_columns[i].classList.add("top-column")
-    bottom_columns[i].classList.add("bottom-column")
-    left_rows[i].classList.add("left-row")
-    right_rows[i].classList.add("right-row")
-}
-
-// Populate table with boxes
-let table_parent = document.getElementsByClassName('table-container')[0]
-var boxes = []
-
-for (let i = 0; i<8; i++){
-    for (let j = 0; j < 8; j++) {
-        boxes[i][j] = document.createElement('div');
-    
-        table_parent.appendChild(boxes[i][j])
-    
-        boxes[i][j].classList.add('box')
-    
-        boxes[i][j].setAttribute('data-i', i);
-        boxes[i][j].setAttribute('data-j', j);
-        if(i % 2 == 0){
-            if(j % 2 == 0){
-                boxes[i][j].classList.add('dark-box')
-            }
-            else
-                boxes[i][j].classList.add('light-box')
-        }
-        else{
-            if(j % 2 == 0){
-                boxes[i][j].classList.add('light-box')
-            }
-            else
-                boxes[i][j].classList.add('dark-box')
-        }
-        // if ((j >= 0 && j < 8) || (j >= 16 && j < 24) || (j >= 34 && j < 40) || (j >= 50 && j < 56)) {
-        //     if (j % 2 == 0)
-        //         boxes[j].classList.add('dark-box')
-        //     else
-        //         boxes[j].classList.add('light-box')
-        // }
-        // else {
-        //     if (j % 2 != 0)
-        //         boxes[j].classList.add('dark-box')
-        //     else
-        //         boxes[j].classList.add('light-box')
-        // }
-    }
-}
-
-// }
-
-
-
-// Import images
-let whitePiecesImages = []
-let blackPiecesImages = []
-
-// White Pieces
-whitePiecesImages[1] = document.createElement("img");
-whitePiecesImages[1].src = "icons/rook_white.png";
-whitePiecesImages[1].classList.add("icon");
-
-
-whitePiecesImages[2] = document.createElement("img");
-whitePiecesImages[2].src = "icons/knight_white.png";
-whitePiecesImages[2].classList.add("icon");
-
-whitePiecesImages[3] = document.createElement("img");
-whitePiecesImages[3].src = "icons/bishop_white.png";
-whitePiecesImages[3].classList.add("icon");
-
-whitePiecesImages[4] = document.createElement("img");
-whitePiecesImages[4].src = "icons/queen_white.png";
-whitePiecesImages[4].classList.add("icon");
-
-whitePiecesImages[5] = document.createElement("img");
-whitePiecesImages[5].src = "icons/king_white.png";
-whitePiecesImages[5].classList.add("icon");
-
-whitePiecesImages[6] = whitePiecesImages[3].cloneNode();
-whitePiecesImages[7] = whitePiecesImages[2].cloneNode();
-whitePiecesImages[8] = whitePiecesImages[1].cloneNode();
-
-
-whitePiecesImages[9] = document.createElement("img");
-whitePiecesImages[9].src = "icons/pawn_white.png";
-whitePiecesImages[9].classList.add("icon");
-whitePiecesImages[9].classList.add("pawn");
-whitePiecesImages[9].classList.add("white-pawn-9");
-
-for (let i = 10; i <= 16; i++) {
-    whitePiecesImages[i] = whitePiecesImages[9].cloneNode();
-}
-
-
-// Black Pieces
-blackPiecesImages[1] = document.createElement("img");
-blackPiecesImages[1].src = "icons/rook_black.png";
-blackPiecesImages[1].classList.add("icon");
-
-
-blackPiecesImages[2] = document.createElement("img");
-blackPiecesImages[2].src = "icons/knight_black.png";
-blackPiecesImages[2].classList.add("icon");
-
-blackPiecesImages[3] = document.createElement("img");
-blackPiecesImages[3].src = "icons/bishop_black.png";
-blackPiecesImages[3].classList.add("icon");
-
-blackPiecesImages[4] = document.createElement("img");
-blackPiecesImages[4].src = "icons/queen_black.png";
-blackPiecesImages[4].classList.add("icon");
-
-blackPiecesImages[5] = document.createElement("img");
-blackPiecesImages[5].src = "icons/king_black.png";
-blackPiecesImages[5].classList.add("icon");
-
-blackPiecesImages[6] = blackPiecesImages[3].cloneNode();
-blackPiecesImages[7] = blackPiecesImages[2].cloneNode();
-blackPiecesImages[8] = blackPiecesImages[1].cloneNode();
-
-blackPiecesImages[9] = document.createElement("img");
-blackPiecesImages[9].src = "icons/pawn_black.png";
-blackPiecesImages[9].classList.add("icon");
-blackPiecesImages[9].classList.add("pawn");
-
-
-for (let i = 10; i <= 16; i++) {
-    blackPiecesImages[i] = blackPiecesImages[9].cloneNode();
-}
+// Import icons for chess pieces
+let images = importPiecesImages();
+let whitePiecesImages = images[0];
+let blackPiecesImages = images[1];
 
 
 
 // Create black and white pieces
-let whitePieces = []
-let blackPieces = []
-for (let i = 1; i <= 16; i++) {
-    whitePieces[i] = new chessPiece(0, 0, whitePiecesImages[i], "white");
-    blackPieces[i] = new chessPiece(0, 0, blackPiecesImages[i], "black");
-}
-whitePieces[9] = new Pawn(0, 0, whitePiecesImages[9], "white")
+let pieces = createPieces();
+let whitePieces = pieces[0];
+let blackPieces = pieces[1];
+
 
 
 // Assign place for each chess piece, according to the user it has
+function assignColorToPlayers(){
+    let player_top, player_bottom
 
-let player_top, player_bottom, player_top_pieces, player_bottom_pieces
-if (Math.random() * 10 % 2 == 0) {
-    player_top = 1
-    player_top_pieces = whitePieces;
-    player_bottom = 2
-    player_bottom_pieces = blackPieces.reverse();
-}
-else {
-    player_top = 2
-    player_top_pieces = blackPieces;
-    player_bottom = 1
-    player_bottom_pieces = whitePieces.reverse();
+    let player_top_pieces, player_bottom_pieces
 
-}
-
-for (let i = 1; i <= 64; i++) {
-    if (i <= 8) {
-        player_top_pieces[i].row = 1;
-        player_top_pieces[i].column = i;
-        parent = boxes[(player_top_pieces[i].row - 1) * 8 + player_top_pieces[i].column]
-        parent.appendChild(player_top_pieces[i].img)
-
+    if (Math.floor(Math.random() *100) % 2 == 0) {
+        player_top = 1
+        whitePieces.forEach(whitePiece => whitePiece.player = player_top)
+        player_top_pieces = whitePieces;
+        player_bottom = 2
+        blackPieces.forEach(blackPiece => blackPiece.player = player_bottom)
+        player_bottom_pieces = blackPieces;
     }
-    else if (i <= 16) {
-        player_top_pieces[i].row = 2;
-        player_top_pieces[i].column = i - 8;
-        parent = boxes[(player_top_pieces[i].row - 1) * 8 + player_top_pieces[i].column]
-        parent.appendChild(player_top_pieces[i].img)
+    else {
+        player_top = 2
+        blackPieces.forEach(blackPiece => blackPiece.player = player_top)
+        player_top_pieces = blackPieces;
+
+        player_bottom = 1
+        whitePieces.forEach(whitePiece => whitePiece.player = player_bottom)
+        player_bottom_pieces = whitePieces;
     }
 
-    else if (i >= 49 && i < 57) {
-        player_bottom_pieces[i - 49].row = 7;
-        player_bottom_pieces[i - 49].column = i - 48;
-        parent = boxes[(player_bottom_pieces[i - 49].row - 1) * 8 + player_bottom_pieces[i - 49].column]
-        parent.appendChild(player_bottom_pieces[i - 49].img)
-    }
-    else if (i >= 57) {
-        player_bottom_pieces[i - 49].row = 8;
-        player_bottom_pieces[i - 49].column = i - 56
-        parent = boxes[(player_bottom_pieces[i - 49].row - 1) * 8 + player_bottom_pieces[i - 49].column]
-        parent.appendChild(player_bottom_pieces[i - 49].img)
-    }
+    return [player_top, player_bottom, player_top_pieces, player_bottom_pieces]
 }
 
-// Create the damn table
-big_table = new ChessTable()
-big_table.chess_matrix = [
-    [player_top_pieces[1], player_top_pieces[2], player_top_pieces[3], player_top_pieces[4], player_top_pieces[5], player_top_pieces[6], player_top_pieces[7], player_top_pieces[8]], 
-    [player_top_pieces[9], player_top_pieces[10], player_top_pieces[11], player_top_pieces[12], player_top_pieces[13], player_top_pieces[14], player_top_pieces[15], player_top_pieces[16]],
-    [],
-    [], 
-    [],
-    [],
-    [player_bottom_pieces[1], player_bottom_pieces[2], player_bottom_pieces[3], player_bottom_pieces[4], player_bottom_pieces[5], player_bottom_pieces[6], player_bottom_pieces[7], player_bottom_pieces[8]], 
-    [player_bottom_pieces[9], player_bottom_pieces[10], player_bottom_pieces[11], player_bottom_pieces[12], player_bottom_pieces[13], player_bottom_pieces[14], player_bottom_pieces[15], player_bottom_pieces[16]],
-]
-console.log(big_table)
+players_info  = assignColorToPlayers()
+let player_top = players_info[0]
+let player_bottom = players_info[1]
+let player_top_pieces = players_info[2]
+let player_bottom_pieces = players_info[3]
+
+
+
+
+// Create the base table
+base_table = new ChessTable()
+base_table.createMatrix(player_top_pieces, player_bottom_pieces, boxes)
+let matrix = base_table.chess_matrix;
 
 
 
 // Possible moves
 
+let allBoxes = Array.from(document.getElementsByClassName("dark-box")).concat(Array.from(document.getElementsByClassName("light-box")))
 
-let pawns = Array.from(document.getElementsByClassName("pawn"));
-console.log(pawns)
-pawns.forEach(element => {
-    parent = element.parentElement;
-    parent.addEventListener("click", function (event) {
-        console.log(this.dataset.i)
-        console.log(this.dataset.j)
-        movePawns(element)
-    }, true);
-})
-
-function movePawns(elem) {
-    console.log("hei")
-}
-
-
-
-
-
+allBoxes.forEach(pieceParent => 
+    {pieceParent.addEventListener("click", 
+                                    function(event){base_table.pieceActionsOnClick(event)}
+                                    , true)})
 
 
