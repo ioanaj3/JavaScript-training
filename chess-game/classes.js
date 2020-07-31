@@ -26,13 +26,11 @@ class ChessTable{
     pieceActionsOnClick(event, player_top_value, player_bottom_value){
         let i = event.currentTarget.dataset.i
         let j = event.currentTarget.dataset.j
-
-        let player_top = player_top_value;
-        let player_bottom = player_bottom_value;
+        
         // if element is clickable aka corresponds to the current user
 
         // If a box with no property is clicked, clear all colors
-        if(this.chess_matrix[i][j] == null && !this.canMoveTo(i,j)){
+        if(this.chess_matrix[i][j] === null && !this.canMoveTo(i,j)){
             this.clearBoxesBg();
         }
         // If a possible-move box is clicked, move current element
@@ -143,16 +141,16 @@ class ChessTable{
 
     showPossibleMoves(box){
 
-        let i = box.dataset.i
-        let j = box.dataset.j
+        let i = parseInt(box.dataset.i)
+        let j = parseInt(box.dataset.j)
     
         let current_box = Array.from(document.getElementsByClassName("current-move"))
         if(current_box[0] != null){
-            let ii = current_box[0].dataset.i
-            let jj = current_box[0].dataset.j
-    
+            let ii = parseInt(current_box[0].dataset.i)
+            let jj = parseInt(current_box[0].dataset.j)
+
             // If the same piece is clicked, disable all colors
-            if(i == ii && j == jj){
+            if(i === ii && j === jj){
                 this.clearBoxesBg();
             }
             // Color the piece's possible moves
@@ -188,7 +186,7 @@ class ChessTable{
             if(possible_moves[k] === "front-2"){
 
                 // Pawn is in initial position
-                if (element.number_of_moves == 0){
+                if (element.number_of_moves === 0){
 
                     if(element.player === player_top){
                         possible_move_i = parseInt(i) + parseInt(1)
@@ -277,7 +275,7 @@ class ChessTable{
     
         let player_top_pieces, player_bottom_pieces
     
-        if (Math.floor(Math.random() *100) % 2 == 0) {
+        if (Math.floor(Math.random() *100) % 2 === 0) {
             player_top = 1
             whitePieces.forEach(whitePiece => whitePiece.player = player_top)
             player_top_pieces = whitePieces;
@@ -315,24 +313,24 @@ class ChessTable{
     let whitePieces = []
     let blackPieces = []
     for (let i = 1; i <= 16; i++) {
-        if(i == 1 || i == 8)
+        if(i === 1 || i === 8)
         {
             whitePieces[i] = new Rook(0, 0, whitePiecesImages[i], "white");
             blackPieces[i] = new Rook(0, 0, blackPiecesImages[i], "black");
         }
-        else if(i == 2 || i == 7){
+        else if(i === 2 || i === 7){
             whitePieces[i] = new Knight(0, 0, whitePiecesImages[i], "white");
             blackPieces[i] = new Knight(0, 0, blackPiecesImages[i], "black");
         }
-        else if(i == 3 || i == 6){
+        else if(i === 3 || i === 6){
             whitePieces[i] = new Bishop(0, 0, whitePiecesImages[i], "white");
             blackPieces[i] = new Bishop(0, 0, blackPiecesImages[i], "black");
         }
-        else if(i == 4){
+        else if(i === 4){
             whitePieces[i] = new Queen(0, 0, whitePiecesImages[i], "white");
             blackPieces[i] = new Queen(0, 0, blackPiecesImages[i], "black");
         }
-        else if(i == 5){
+        else if(i === 5){
             whitePieces[i] = new King(0, 0, whitePiecesImages[i], "white");
             blackPieces[i] = new King(0, 0, blackPiecesImages[i], "black");
         }
@@ -426,9 +424,20 @@ class ChessTable{
     // Generate the html + css part of the table
     generateChessTable(){
         // Create parent div 
+
+        let player_top_container = document.createElement('div');
+        document.getElementsByTagName('body')[0].appendChild(player_top_container);
+        player_top_container.innerHTML = "hei"
+        player_top_container.classList.add("player-top-container");
+
         let chess_table = document.createElement('div');
         document.getElementsByTagName('body')[0].appendChild(chess_table);
-        chess_table.classList.add("chess-table")
+        chess_table.classList.add("chess-table");
+
+        let player_bottom_container = document.createElement('div');
+        document.getElementsByTagName('body')[0].appendChild(player_bottom_container);
+        player_bottom_container.innerHTML = "hej"
+        player_bottom_container.classList.add("player-bottom-container");
 
         let chess_table_container = document.getElementsByClassName('chess-table')[0]
     
@@ -512,15 +521,15 @@ class ChessTable{
             
                 boxes[i][j].setAttribute('data-i', i);
                 boxes[i][j].setAttribute('data-j', j);
-                if(i % 2 == 0){
-                    if(j % 2 == 0){
+                if(i % 2 === 0){
+                    if(j % 2 === 0){
                         boxes[i][j].classList.add('dark-box')
                     }
                     else
                         boxes[i][j].classList.add('light-box')
                 }
                 else{
-                    if(j % 2 == 0){
+                    if(j % 2 === 0){
                         boxes[i][j].classList.add('light-box')
                     }
                     else
