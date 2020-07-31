@@ -26,46 +26,6 @@ let base_table = new ChessTable()
 
 let boxes = base_table.generateChessTable();
 
-// // Import icons for chess pieces
-// let images = importPiecesImages();
-// let whitePiecesImages = images[0];
-// let blackPiecesImages = images[1];
-
-
-
-// // Create black and white pieces
-// let pieces = createPieces();
-// let whitePieces = pieces[0];
-// let blackPieces = pieces[1];
-
-
-
-// Assign place for each chess piece, according to the user it has
-// function assignColorToPlayers(){
-//     let player_top, player_bottom
-
-//     let player_top_pieces, player_bottom_pieces
-
-//     if (Math.floor(Math.random() *100) % 2 == 0) {
-//         player_top = 1
-//         whitePieces.forEach(whitePiece => whitePiece.player = player_top)
-//         player_top_pieces = whitePieces;
-//         player_bottom = 2
-//         blackPieces.forEach(blackPiece => blackPiece.player = player_bottom)
-//         player_bottom_pieces = blackPieces;
-//     }
-//     else {
-//         player_top = 2
-//         blackPieces.forEach(blackPiece => blackPiece.player = player_top)
-//         player_top_pieces = blackPieces;
-
-//         player_bottom = 1
-//         whitePieces.forEach(whitePiece => whitePiece.player = player_bottom)
-//         player_bottom_pieces = whitePieces;
-//     }
-
-//     return [player_top, player_bottom, player_top_pieces, player_bottom_pieces]
-// }
 
 players_info  = base_table.populateChessTable()
 let player_top = players_info[0]
