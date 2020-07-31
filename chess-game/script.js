@@ -19,6 +19,7 @@
 // setTimeout(countdown,1000)
 
 // let game = new ChessGame();
+// game.startGame();
 
 // Generate chess table visually
 let boxes = generateChessTable();
@@ -64,7 +65,7 @@ function assignColorToPlayers(){
     return [player_top, player_bottom, player_top_pieces, player_bottom_pieces]
 }
 
-players_info  = assignColorToPlayers()
+players_info  = populateChessTable()
 let player_top = players_info[0]
 let player_bottom = players_info[1]
 let player_top_pieces = players_info[2]
@@ -73,14 +74,14 @@ let player_bottom_pieces = players_info[3]
 
 
 
-// Create the base table
+// // Create the base table
 base_table = new ChessTable()
 base_table.createMatrix(player_top_pieces, player_bottom_pieces, boxes)
 let matrix = base_table.chess_matrix;
 
 
 
-// Possible moves
+// // Possible moves
 
 let allBoxes = Array.from(document.getElementsByClassName("dark-box")).concat(Array.from(document.getElementsByClassName("light-box")))
 
