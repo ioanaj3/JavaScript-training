@@ -1,6 +1,7 @@
 class ChessTable{
     chess_matrix =[]
 
+    // Creates base matrix
     createMatrix(player_top_pieces, player_bottom_pieces, boxes){
         this.chess_matrix = [
             [player_top_pieces[1], player_top_pieces[2], player_top_pieces[3], player_top_pieces[4], player_top_pieces[5], player_top_pieces[6], player_top_pieces[7], player_top_pieces[8]], 
@@ -21,83 +22,123 @@ class ChessTable{
         }  
     }
 
+    // What to do when a piece is clicked
     pieceActionsOnClick(event, player_top_value, player_bottom_value){
         let i = event.currentTarget.dataset.i
         let j = event.currentTarget.dataset.j
 
         let player_top = player_top_value;
         let player_bottom = player_bottom_value;
+        // if element is clickable aka corresponds to the current user
 
         // If a box with no property is clicked, clear all colors
         if(this.chess_matrix[i][j] == null && !this.canMoveTo(i,j)){
             this.clearBoxesBg();
         }
         // If a possible-move box is clicked, move current element
-        else if (this.chess_matrix[i][j] == null && this.canMoveTo(i,j)){
-            this.movePiece(i,j)
+        else if (this.chess_matrix[i][j] === null && this.canMoveTo(i,j)){
+            this.movePiece(i,j);
+            this.changePlayer();
+        }
+        else if (this.chess_matrix[i][j] !== null && this.canAttack(i, j)){
+            this.attackPiece(i,j);
+            this.changePlayer();
         }
         // If a box with a piece is clicked, show possible moves
-        else if(this.chess_matrix[i][j] != null){
-            
-            this.showPossibleMoves(event.currentTarget)}
-    }    
+        else if(this.chess_matrix[i][j] != null && this.chess_matrix[i][j].color === current_user){
+            this.showPossibleMoves(event.currentTarget);
+            this.showPossibleAttacks(event.currentTarget)}
 
-    moveElementInMatrix(intial_i, initial_j, final_i,final_j){
+    } 
 
-        this.chess_matrix[final_i][final_j] = this.chess_matrix[intial_i][initial_j]
-        this.chess_matrix[intial_i][initial_j] = null
-        boxes[final_i][final_j].appendChild(this.chess_matrix[final_i][final_j].img)
-        this.chess_matrix[final_i][final_j].number_of_moves ++;
-    
+    changePlayer(){
+        if(current_user === "white"){
+            current_user = "black";
+        }
+        else{
+            current_user = "white";
+        }
+
+        if((current_user === "black" && player_top ===2) || (current_user === "white" && player_top === 1))
+            textMessage.innerHTML="It's player top's turn"
+        else if((current_user === "black" && player_bottom === 2) || (current_user === "white" && player_bottom === 1))
+            textMessage.innerHTML="It's player bottom's turn"
     }
 
+
+    // Move piece
     movePiece(final_i, final_j){
         // Get current clicked element
         let current_box = Array.from(document.getElementsByClassName("current-move"))
     
         let initial_i = current_box[0].dataset.i;
         let initial_j = current_box[0].dataset.j;
+
+        this.chess_matrix[final_i][final_j] = this.chess_matrix[initial_i][initial_j]
+        this.chess_matrix[initial_i][initial_j] = null
+
+        boxes[final_i][final_j].appendChild(this.chess_matrix[final_i][final_j].img)
+
+        this.chess_matrix[final_i][final_j].number_of_moves ++;
     
-        this.moveElementInMatrix(initial_i, initial_j, final_i, final_j)
         this.clearBoxesBg();
     }
 
+    attackPiece(final_i, final_j){
+        // Get current clicked element
+        let current_box = Array.from(document.getElementsByClassName("current-move"))
+        
+        let initial_i = current_box[0].dataset.i;
+        let initial_j = current_box[0].dataset.j;
+
+        boxes[final_i][final_j].removeChild(this.chess_matrix[final_i][final_j].img)
+        this.chess_matrix[final_i][final_j] = this.chess_matrix[initial_i][initial_j]
+        this.chess_matrix[initial_i][initial_j] = null
+        boxes[final_i][final_j].appendChild(this.chess_matrix[final_i][final_j].img)
+
+        this.chess_matrix[final_i][final_j].number_of_moves ++;
+
+        this.clearBoxesBg();
+    }
+
+    // Clear possible moves and current clicked item
     clearBoxesBg(){
         let possible_moves_boxes = Array.from(document.getElementsByClassName("possible-move"));
+        let possible_attacks_boxes = Array.from(document.getElementsByClassName("possible-attack"));
         let current_box = Array.from(document.getElementsByClassName("current-move"))
     
         possible_moves_boxes.forEach(element => {element.classList.remove("possible-move")})
+        possible_attacks_boxes.forEach(element =>{element.classList.remove("possible-attack")})
         current_box.forEach(element => {element.classList.remove("current-move")})
     }
 
+    // Check if box is labeled as possible move
     canMoveTo(i,j) {
         return document.querySelector(`[data-i="${i}"][data-j="${j}"].possible-move`) !== null
     }
+    canAttack(i,j){
+        return document.querySelector(`[data-i="${i}"][data-j="${j}"].possible-attack`) !== null
 
+    }
+    // Color current clicked element
     colorCurrentElement(i, j){
         boxes[i][j].classList.add("current-move")
     }
 
-    colorPossibleMove(steps, element, i, j, direction){
-        if(element.player == player_top){
-            if(direction == "front"){
-                boxes[parseInt(i) + parseInt(steps)][j].classList.add("possible-move");
-            }
-        }
-        else{
-            if(direction == "front"){
-                boxes[parseInt(i) - parseInt(steps)][j].classList.add("possible-move");
-            }
-        }
+    // Color possible attack or move
+    colorPossibleMove( i, j, type){
+        let added_class
+        if(type === "move") added_class = "possible-move"
+        else if (type === "attack") added_class = "possible-attack"
+        boxes[i][j].classList.add(added_class)
+    }
+    // Verify if piece exists at certain place
+    pieceExistsAt(i,j){
+        return matrix[i][j] 
     }
 
-    verifyFrontElement(steps,element,i,j){
-        if(element.player == player_top){
-            return (matrix[parseInt(i) + parseInt(steps)][j])
-        }
-        else{
-            return (matrix[parseInt(i) - parseInt(steps)][j])
-        }
+    isOpponentPiece(possible_attack_i, possible_attack_j){
+        return !(this.chess_matrix[possible_attack_i][possible_attack_j].color === current_user)
     }
 
     showPossibleMoves(box){
@@ -110,49 +151,127 @@ class ChessTable{
             let ii = current_box[0].dataset.i
             let jj = current_box[0].dataset.j
     
-            // If the same piece is clicked
+            // If the same piece is clicked, disable all colors
             if(i == ii && j == jj){
                 this.clearBoxesBg();
             }
+            // Color the piece's possible moves
             else{
-                this.colorElem(i, j);
+                this.showPossibleMovesAttacks(i, j);
             }
         }
-        
+        // Color the piece's possible moves
         else{
-            this.colorElem(i, j);
-        }
-        
+            this.showPossibleMovesAttacks(i, j);
+        }  
     }
-    colorElem(i, j){
+
+    showPossibleAttacks(box){
+        let i = box.dataset.i
+        let j = box.dataset.j
+    
+        this.showPossibleMovesAttacks(i,j)
+    }
+
+    // Colors possible move, according to the possible moves of the class
+    showPossibleMovesAttacks(i, j){
         this.clearBoxesBg();
         let element = this.chess_matrix[i][j]
         let possible_moves = element.possible_moves;
+        let possible_attacks = element.possible_attacks;
+
+        // Iterate through possible moves
         for(let k = 0; k < possible_moves.length; k++){
+            let possible_move_i, possible_move_j, possible_move_i_2, possible_move_j_2
 
-            if(possible_moves[k] == "front-2"){
 
-                // este in pozitia initiala
+            if(possible_moves[k] === "front-2"){
+
+                // Pawn is in initial position
                 if (element.number_of_moves == 0){
 
-                    // urmatoarele 2 elemente sunt goale
-                    if (this.verifyFrontElement(1, element, i, j) == null && this.verifyFrontElement(2, element, i, j) == null){
-                        this.colorPossibleMove(1, element, i, j, "front");
-                        this.colorPossibleMove(2, element, i, j, "front");
-                        this.colorCurrentElement(i, j);
+                    if(element.player === player_top){
+                        possible_move_i = parseInt(i) + parseInt(1)
+                        possible_move_j = parseInt(j) 
+                        possible_move_i_2 = parseInt(i) + parseInt(2)
+                        possible_move_j_2 = parseInt(j) 
+                    }
+                    else if(element.player === player_bottom){
+                        possible_move_i = parseInt(i) - parseInt(1)
+                        possible_move_j = parseInt(j) 
+                        possible_move_i_2 = parseInt(i) - parseInt(2)
+                        possible_move_j_2 = parseInt(j) 
                     }
 
+                    // Next 2 elements in front are null
+                    if (this.pieceExistsAt(possible_move_i, possible_move_j) === null && this.pieceExistsAt(possible_move_i_2, possible_move_j_2) === null ){
+                 
+                                this.colorPossibleMove(possible_move_i, possible_move_j,"move");
+                                this.colorPossibleMove(possible_move_i_2, possible_move_j_2,"move");
+                                this.colorCurrentElement(i, j);   
+                    }
                 }
             }
-            else if(possible_moves[k] == "front-1"){
+
+            else if(possible_moves[k] === "front-1"){
+
+                if(element.player === player_top){
+                    possible_move_i = parseInt(i) + parseInt(1)
+                    possible_move_j = parseInt(j)
+                }
+                else if(element.player === player_bottom){
+                    possible_move_i = parseInt(i) - parseInt(1)
+                    possible_move_j = parseInt(j)
+                }
                 // urmatoarul 1 element este gol
-                if (this.verifyFrontElement(1, element, i, j) == null ){
-                    this.colorPossibleMove(1, element, i, j, "front");
+                if (!this.pieceExistsAt(possible_move_i, possible_move_j)){
+                    this.colorPossibleMove(possible_move_i, possible_move_j, "move");
                     this.colorCurrentElement(i, j);
                 }
             }
         }
+
+        // Iterate through possible attacks
+        for(let k = 0; k < possible_attacks.length; k++){
+            let possible_attack_i, possible_attack_j
+
+            if(possible_attacks[k] === "leftdiag-1"){
+                if(element.player === player_top){
+                    possible_attack_i = parseInt(i) + parseInt(1)
+                    possible_attack_j = parseInt(j) + parseInt(1)
+                }
+                else if(element.player === player_bottom){
+                    possible_attack_i = parseInt(i) - parseInt(1)
+                    possible_attack_j = parseInt(j) - parseInt(1)
+                }
+                // If there is a piece at that place
+                if(this.pieceExistsAt(possible_attack_i, possible_attack_j) && this.isOpponentPiece(possible_attack_i, possible_attack_j)){
+                    //If the piece is from the opponent
+                    // if(this.pieceFromOpponent(i,j,))
+                    
+                    this.colorPossibleMove(possible_attack_i, possible_attack_j, "attack")
+                    this.colorCurrentElement(i, j);
+
+                }
+            }
+            else if (possible_attacks[k] === "rightdiag-1"){
+                if(element.player === player_top){
+                    possible_attack_i = parseInt(i) + parseInt(1)
+                    possible_attack_j = parseInt(j) - parseInt(1)
+                }
+                else if(element.player === player_bottom){
+                    possible_attack_i = parseInt(i) - parseInt(1)
+                    possible_attack_j = parseInt(j) + parseInt(1)
+                }
+                if(this.pieceExistsAt(possible_attack_i, possible_attack_j) && this.isOpponentPiece(possible_attack_i, possible_attack_j)){
+                    this.colorPossibleMove(possible_attack_i, possible_attack_j, "attack")
+                    this.colorCurrentElement(i, j);
+
+                }
+            }
+        }
     }
+    // Assign color to top/bottom player
     assignColorToPlayers(whitePieces, blackPieces){
         let player_top, player_bottom
     
@@ -179,6 +298,7 @@ class ChessTable{
         return [player_top, player_bottom, player_top_pieces, player_bottom_pieces]
     }
 
+    // Populate with chess pieces, assign each player a color
     populateChessTable(){
         let images = this.importPiecesImages();
         let whitePiecesImages = images[0];
@@ -188,7 +308,6 @@ class ChessTable{
         let whitePieces = pieces[0];
         let blackPieces = pieces[1];
         return this.assignColorToPlayers(whitePieces, blackPieces)
-
     }
 
     // Create black and white pieces
@@ -304,37 +423,39 @@ class ChessTable{
     }
     return [whitePiecesImages, blackPiecesImages]
 }
-
+    // Generate the html + css part of the table
     generateChessTable(){
         // Create parent div 
         let chess_table = document.createElement('div');
         document.getElementsByTagName('body')[0].appendChild(chess_table);
         chess_table.classList.add("chess-table")
+
+        let chess_table_container = document.getElementsByClassName('chess-table')[0]
     
         // Top container - create
         let top_container = document.createElement('div');
-        document.getElementsByClassName('chess-table')[0].appendChild(top_container);
+        chess_table_container.appendChild(top_container);
         top_container.classList.add("top-container")
     
         // Left container - create
         let left_container = document.createElement('div');
-        document.getElementsByClassName('chess-table')[0].appendChild(left_container);
+        chess_table_container.appendChild(left_container);
         left_container.classList.add("left-container")
     
         // Right container - create
         let right_container = document.createElement('div');
-        document.getElementsByClassName('chess-table')[0].appendChild(right_container);
+        chess_table_container.appendChild(right_container);
         right_container.classList.add("right-container")
     
         // Bottom container - create
         let bottom_container = document.createElement('div');
-        document.getElementsByClassName('chess-table')[0].appendChild(bottom_container);
+        chess_table_container.appendChild(bottom_container);
         bottom_container.classList.add("bottom-container")
     
         // Table container - create
         let table_container = document.createElement('div');
         // table_container.innerHTML = "terog"
-        document.getElementsByClassName('chess-table')[0].appendChild(table_container);
+        chess_table_container.appendChild(table_container);
         table_container.classList.add("table-container")
     
     

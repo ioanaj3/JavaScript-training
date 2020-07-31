@@ -80,6 +80,22 @@ let player_bottom_pieces = players_info[3]
 base_table.createMatrix(player_top_pieces, player_bottom_pieces, boxes)
 let matrix = base_table.chess_matrix;
 
+let top_player_moves = 0
+let bottom_player_moves = 0
+let current_user = "white"
+
+let textMessage = document.createElement('div');
+// textMessage.innerHTML="Hello World"
+textMessage.classList.add("player-order")
+document.getElementsByTagName('body')[0].appendChild(textMessage)
+
+if(player_top == 1){
+    textMessage.innerHTML="It's player top's turn"
+}
+else{
+    textMessage.innerHTML="It's player bottom's turn"
+
+}
 
 
 // // Possible moves
@@ -88,7 +104,7 @@ let allBoxes = Array.from(document.getElementsByClassName("dark-box")).concat(Ar
 
 allBoxes.forEach(pieceParent => 
     {pieceParent.addEventListener("click", 
-                                    function(event){base_table.pieceActionsOnClick(event)}
+                                    function(event){base_table.pieceActionsOnClick(event, player_top, player_bottom, current_user)}
                                     , true)})
 
 

@@ -1,7 +1,11 @@
 body{
     background-color: #F9B5AC;
     font-family: 'Roboto', sans-serif;
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, auto);
+    /* display: flex;
+    flex-direction: column; */
     width: 100%;
     height: 100%
 }
@@ -15,10 +19,14 @@ body{
     width:100%;
 }
 .chess-table{
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start:1 ;
+    grid-row-end:2 ;
     background-color: #9A868B;
     position: absolute;
     text-align: center;
-    margin-top: 1%;
+    margin-top: 3%;
     margin-left: 20%;
     width: 60%;
     height: 90%;
@@ -124,12 +132,30 @@ body{
     background-color: #210B2C;
 }
 
+.possible-move:hover{
+    background-color: #BC9FAF;
 
+}
 .possible-move{
     background-color: #D5C3CD;
     
 }
 
+.player-order{
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start:2;
+    grid-row-end:3 ;
+    text-align: center;
+    padding: 20px;
+}
 
+.possible-attack{
+    background-color: #82213B;
+}
+
+.possible-attack:hover{
+    background-color: #42101D;
+}
 
 

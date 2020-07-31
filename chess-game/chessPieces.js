@@ -37,7 +37,7 @@ class chessPiece{
 
 class Pawn extends chessPiece{
     possible_moves = ["front-2", "front-1"]
-    possible_attacks = ["leftdiag-1", "rightdiag-2"]
+    possible_attacks = ["leftdiag-1", "rightdiag-1"]
 
 }
 
