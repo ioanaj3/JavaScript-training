@@ -22,17 +22,20 @@
 // game.startGame();
 
 // Generate chess table visually
+
 let base_table = new ChessTable()
 
-let boxes = base_table.generateChessTable();
+let matrix_collection = base_table.generateChessTable();
 
+let boxes = matrix_collection[0]
+let player_top_captures = matrix_collection[1]
+let player_bottom_captures = matrix_collection[2]
 
 players_info  = base_table.populateChessTable()
 let player_top = players_info[0]
 let player_bottom = players_info[1]
 let player_top_pieces = players_info[2]
 let player_bottom_pieces = players_info[3]
-
 
 
 
@@ -44,23 +47,22 @@ let top_player_moves = 0
 let bottom_player_moves = 0
 let current_user = "white"
 
-let textMessage = document.createElement('div');
-// textMessage.innerHTML="Hello World"
-textMessage.classList.add("player-order")
-document.getElementsByTagName('body')[0].appendChild(textMessage)
+let textMessage = $('<div/>');
+textMessage.addClass("player-order")
+$("body").append(textMessage)
 
 if(player_top == 1){
-    textMessage.innerHTML="It's player top's turn"
+    textMessage.html("It's player top's turn")
 }
 else{
-    textMessage.innerHTML="It's player bottom's turn"
+    textMessage.html("It's player bottom's turn")
 
 }
 
 
 // // Possible moves
 
-let allBoxes = Array.from(document.getElementsByClassName("dark-box")).concat(Array.from(document.getElementsByClassName("light-box")))
+let allBoxes = Array.from($(".dark-box")).concat(Array.from($(".light-box")))
 
 allBoxes.forEach(pieceParent => 
     {pieceParent.addEventListener("click", 

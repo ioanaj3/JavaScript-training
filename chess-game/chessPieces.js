@@ -42,8 +42,8 @@ class Pawn extends chessPiece{
 }
 
 class Rook extends chessPiece{
-    possible_moves = []
-    possible_attacks = []
+    possible_moves = ["front-back-max", "left-right-max"]
+    possible_attacks = ["front-back-max", "left-right-max"]
 
 }
 
@@ -53,12 +53,12 @@ class Knight extends chessPiece{
 
 }
 class Bishop extends chessPiece{
-    possible_moves = []
+    possible_moves = ["leftdiag-rightdiag-max"]
     possible_attacks = []
 
 }
 class Queen extends chessPiece{
-    possible_moves = []
+    possible_moves = ["leftdiag-rightdiag-max", "front-back-max", "left-right-max"]
     possible_attacks = []
 
 }
