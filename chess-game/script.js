@@ -27,7 +27,7 @@ let base_table = new ChessTable()
 
 let matrix_collection = base_table.generateChessTable();
 
-let boxes = matrix_collection[0]
+let $boxes = matrix_collection[0]
 let player_top_captures = matrix_collection[1]
 let player_bottom_captures = matrix_collection[2]
 
@@ -40,7 +40,7 @@ let player_bottom_pieces = players_info[3]
 
 
 // // Create the base table
-base_table.createMatrix(player_top_pieces, player_bottom_pieces, boxes)
+base_table.createMatrix(player_top_pieces, player_bottom_pieces, $boxes)
 let matrix = base_table.chess_matrix;
 
 let top_player_moves = 0
@@ -62,11 +62,13 @@ else{
 
 // // Possible moves
 
-let allBoxes = Array.from($(".dark-box")).concat(Array.from($(".light-box")))
+$(".box").click(function(event){base_table.pieceActionsOnClick(event, player_top, player_bottom, current_user)})
 
-allBoxes.forEach(pieceParent => 
-    {pieceParent.addEventListener("click", 
-                                    function(event){base_table.pieceActionsOnClick(event, player_top, player_bottom, current_user)}
-                                    , true)})
+// let allBoxes = Array.from($(".dark-box")).concat(Array.from($(".light-box")))
+
+// allBoxes.forEach(pieceParent => 
+//     {pieceParent.addEventListener("click", 
+//                                     function(event){base_table.pieceActionsOnClick(event, player_top, player_bottom, current_user)}
+//                                     , true)})
 
 

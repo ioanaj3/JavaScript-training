@@ -1,6 +1,6 @@
 
 class ChessTable{
-    chess_matrix =[]
+    chess_matrix = []
 
     // Creates base matrix
     createMatrix(player_top_pieces, player_bottom_pieces, boxes){
@@ -20,7 +20,9 @@ class ChessTable{
                     boxes[i][j].append(this.chess_matrix[i][j].img)
                 }
             }
-        }  
+        }
+        $(".icon").draggable();
+        $(".icon").draggable("disable");  
     }
 
     // What to do when a piece is clicked
@@ -37,16 +39,16 @@ class ChessTable{
         // If a possible-move box is clicked, move current element
         else if (this.chess_matrix[i][j] === null && this.canMoveTo(i,j)){
             this.movePiece(i,j);
-            this.changePlayer();
+            // this.changePlayer();
         }
         else if (this.chess_matrix[i][j] !== null && this.canAttack(i, j)){
             this.attackPiece(i,j);
-            this.changePlayer();
+            // this.changePlayer();
         }
         // If a box with a piece is clicked, show possible moves
         else if(this.chess_matrix[i][j] != null && this.chess_matrix[i][j].color === current_user){
             this.showPossibleMoves(event.currentTarget);
-            this.showPossibleAttacks(event.currentTarget)}
+        }
 
     } 
 
@@ -65,15 +67,14 @@ class ChessTable{
     }
 
     getCurrentPieceCoordinates(){
-        let current_box = $(".current-move")
+        let $current_box = $(".current-move")
     
-        let initial_i = current_box.attr("data-i")
-        let initial_j = current_box.attr("data-j")
-        return [initial_i, initial_j]
+        let $initial_i = $current_box.attr("data-i")
+        let $initial_j = $current_box.attr("data-j")
+        return [$initial_i, $initial_j]
     }
     // Move piece
     movePiece(final_i, final_j){
-        // Get current clicked element
         let current_piece = this.getCurrentPieceCoordinates()
         let initial_i = current_piece[0];
         let initial_j = current_piece[1]
@@ -81,15 +82,16 @@ class ChessTable{
         this.chess_matrix[final_i][final_j] = this.chess_matrix[initial_i][initial_j]
         this.chess_matrix[initial_i][initial_j] = null
 
-        boxes[final_i][final_j].append(this.chess_matrix[final_i][final_j].img)
+        $boxes[final_i][final_j].append(this.chess_matrix[final_i][final_j].img)
 
         this.chess_matrix[final_i][final_j].number_of_moves ++;
-    
+
+        $boxes[final_i][final_j].children().draggable("disable");
         this.clearBoxesBg();
+        this.changePlayer();
     }
 
     attackPiece(final_i, final_j){
-        // Get current clicked element
         let current_piece = this.getCurrentPieceCoordinates()
         let initial_i = current_piece[0];
         let initial_j = current_piece[1]
@@ -113,24 +115,29 @@ class ChessTable{
             }
         }
 
+        this.chess_matrix[final_i][final_j] = null
         this.chess_matrix[final_i][final_j] = this.chess_matrix[initial_i][initial_j]
         this.chess_matrix[initial_i][initial_j] = null
-        boxes[final_i][final_j].append(this.chess_matrix[final_i][final_j].img)
-
+        $boxes[final_i][final_j].append(this.chess_matrix[final_i][final_j].img)
         this.chess_matrix[final_i][final_j].number_of_moves ++;
-
+        $boxes[final_i][final_j].children().draggable("disable");
         this.clearBoxesBg();
+        this.changePlayer();
     }
 
     // Clear possible moves and current clicked item
     clearBoxesBg(){
-        let possible_moves_boxes = $(".possible-move");
-        let possible_attacks_boxes = $(".possible-attack");
-        let current_box = $(".current-move")
+        let $possible_moves_boxes = $(".possible-move");
+        let $possible_attacks_boxes = $(".possible-attack");
+        let $current_box = $(".current-move")
+
     
-        possible_moves_boxes.each(function(){$(this).removeClass("possible-move")});
-        possible_attacks_boxes.each(function(){$(this).removeClass("possible-attack")});
-        current_box.each(function(){$(this).removeClass("current-move")})
+        $possible_moves_boxes.each(function(){$(this).removeClass("possible-move")});
+        $possible_attacks_boxes.each(function(){$(this).removeClass("possible-attack")});
+        $current_box.each(function(){$(this).removeClass("current-move")})
+
+        $(".box").droppable("disable")
+
     }
 
     // Check if box is labeled as possible move
@@ -142,7 +149,8 @@ class ChessTable{
     }
     // Color current clicked element
     colorCurrentElement(i, j){
-        boxes[i][j].addClass("current-move")
+        $boxes[i][j].addClass("current-move");
+        $boxes[i][j].children().draggable("enable");
     }
 
     // Color possible attack or move
@@ -150,7 +158,8 @@ class ChessTable{
         let added_class
         if(type === "move") added_class = "possible-move"
         else if (type === "attack") added_class = "possible-attack"
-        boxes[i][j].addClass(added_class)
+        $boxes[i][j].addClass(added_class)
+        $(".possible-move, .possible-attack").droppable('enable');
     }
     // Verify if piece exists at certain place
     pieceExistsAt(i,j){
@@ -166,13 +175,13 @@ class ChessTable{
         let i = parseInt(box.dataset.i)
         let j = parseInt(box.dataset.j)
     
-        let current_box = Array.from($(".current-move"))
-        if(current_box[0] != null){
-            let ii = parseInt(current_box[0].dataset.i)
-            let jj = parseInt(current_box[0].dataset.j)
+        let $current_box = $(".current-move")
+        if($current_box.length != 0){
 
+            let $i = parseInt($current_box.attr("data-i"))
+            let $j = parseInt($current_box.attr("data-j"))
             // If the same piece is clicked, disable all colors
-            if(i === ii && j === jj){
+            if(i === $i && j === $j){
                 this.clearBoxesBg();
             }
             // Color the piece's possible moves
@@ -186,13 +195,6 @@ class ChessTable{
         }  
     }
 
-    showPossibleAttacks(box){
-        let i = box.dataset.i
-        let j = box.dataset.j
-    
-        this.showPossibleMovesAttacks(i,j)
-    }
-
     // Colors possible move, according to the possible moves of the class
     showPossibleMovesAttacks(i, j){
         this.clearBoxesBg();
@@ -203,8 +205,7 @@ class ChessTable{
         // Iterate through possible moves
         for(let k = 0; k < possible_moves.length; k++){
             let possible_move_i, possible_move_j, possible_move_i_2, possible_move_j_2
-            let elem_found, parser_adder
-            let elem_found_front, elem_found_back
+            let elem_found
 
             switch (possible_moves[k]) {
                 case "front-2":
@@ -317,7 +318,7 @@ class ChessTable{
                         } }
 
                     }
-       
+                    break;
                 case "leftdiag-rightdiag-max":
                     elem_found = false;
                     for(let possible_move_i = parseInt(i) + parseInt(1), possible_move_j = parseInt(j) + parseInt(1); possible_move_i <8 && possible_move_j<8 && possible_move_i>=0 && possible_move_j>=0 && elem_found === false; possible_move_i++, possible_move_j++){
@@ -379,9 +380,6 @@ class ChessTable{
                             }
                         }
                     }
-
-
-
                     break;
                 default:
                     break;
@@ -455,14 +453,14 @@ class ChessTable{
 
     // Populate with chess pieces, assign each player a color
     populateChessTable(){
-        let images = this.importPiecesImages();
-        let whitePiecesImages = images[0];
-        let blackPiecesImages = images[1];
+        let $images = this.importPiecesImages();
+        let $whitePiecesImages = $images[0];
+        let $blackPiecesImages = $images[1];
 
-        let pieces = this.createPieces(whitePiecesImages, blackPiecesImages);
-        let whitePieces = pieces[0];
-        let blackPieces = pieces[1];
-        return this.assignColorToPlayers(whitePieces, blackPieces)
+        let pieces = this.createPieces($whitePiecesImages, $blackPiecesImages);
+        let $whitePieces = pieces[0];
+        let $blackPieces = pieces[1];
+        return this.assignColorToPlayers($whitePieces, $blackPieces)
     }
 
     // Create black and white pieces
@@ -501,239 +499,257 @@ class ChessTable{
     // Import images
     importPiecesImages(){
 
-    let whitePiecesImages = []
-    let blackPiecesImages = []
+    let $whitePiecesImages = []
+    let $blackPiecesImages = []
 
     // White Pieces
-    whitePiecesImages[1] = $("<img/>");
-    whitePiecesImages[1].attr('src', "icons/rook_white.png");
+    $whitePiecesImages[1] = $("<img/>");
+    $whitePiecesImages[1].attr('src', "icons/rook_white.png");
 
-    whitePiecesImages[2] = $("<img/>");
-    whitePiecesImages[2].attr('src', "icons/knight_white.png");
+    $whitePiecesImages[2] = $("<img/>");
+    $whitePiecesImages[2].attr('src', "icons/knight_white.png");
 
-    whitePiecesImages[3] = $("<img/>");
-    whitePiecesImages[3].attr('src', "icons/bishop_white.png");
+    $whitePiecesImages[3] = $("<img/>");
+    $whitePiecesImages[3].attr('src', "icons/bishop_white.png");
 
-    whitePiecesImages[4] = $("<img/>");
-    whitePiecesImages[4].attr('src', "icons/queen_white.png");
+    $whitePiecesImages[4] = $("<img/>");
+    $whitePiecesImages[4].attr('src', "icons/queen_white.png");
 
-    whitePiecesImages[5] = $("<img/>");
-    whitePiecesImages[5].attr('src', "icons/king_white.png");
+    $whitePiecesImages[5] = $("<img/>");
+    $whitePiecesImages[5].attr('src', "icons/king_white.png");
 
-    whitePiecesImages[6] = whitePiecesImages[3].clone();
-    whitePiecesImages[7] = whitePiecesImages[2].clone();
-    whitePiecesImages[8] = whitePiecesImages[1].clone();
+    $whitePiecesImages[6] = $whitePiecesImages[3].clone();
+    $whitePiecesImages[7] = $whitePiecesImages[2].clone();
+    $whitePiecesImages[8] = $whitePiecesImages[1].clone();
 
-    whitePiecesImages[9] = $("<img/>");
-    whitePiecesImages[9].attr('src', "icons/pawn_white.png");
+    $whitePiecesImages[9] = $("<img/>");
+    $whitePiecesImages[9].attr('src', "icons/pawn_white.png");
 
     for (let i = 10; i <= 16; i++) {
-        whitePiecesImages[i] = whitePiecesImages[9].clone();
+        $whitePiecesImages[i] = $whitePiecesImages[9].clone();
     }
 
     // Black Pieces
-    blackPiecesImages[1] = $("<img/>");
-    blackPiecesImages[1].attr('src', "icons/rook_black.png");
+    $blackPiecesImages[1] = $("<img/>");
+    $blackPiecesImages[1].attr('src', "icons/rook_black.png");
 
-    blackPiecesImages[2] = $("<img/>");
-    blackPiecesImages[2].attr('src', "icons/knight_black.png");
+    $blackPiecesImages[2] = $("<img/>");
+    $blackPiecesImages[2].attr('src', "icons/knight_black.png");
 
-    blackPiecesImages[3] = $("<img/>");
-    blackPiecesImages[3].attr('src', "icons/bishop_black.png");
+    $blackPiecesImages[3] = $("<img/>");
+    $blackPiecesImages[3].attr('src', "icons/bishop_black.png");
 
-    blackPiecesImages[4] = $("<img/>");
-    blackPiecesImages[4].attr('src', "icons/queen_black.png");
+    $blackPiecesImages[4] = $("<img/>");
+    $blackPiecesImages[4].attr('src', "icons/queen_black.png");
 
-    blackPiecesImages[5] = $("<img/>");
-    blackPiecesImages[5].attr('src', "icons/king_black.png");
+    $blackPiecesImages[5] = $("<img/>");
+    $blackPiecesImages[5].attr('src', "icons/king_black.png");
 
-    blackPiecesImages[6] = blackPiecesImages[3].clone();
+    $blackPiecesImages[6] = $blackPiecesImages[3].clone();
 
-    blackPiecesImages[7] = blackPiecesImages[2].clone();    
+    $blackPiecesImages[7] = $blackPiecesImages[2].clone();    
 
-    blackPiecesImages[8] = blackPiecesImages[1].clone();
+    $blackPiecesImages[8] = $blackPiecesImages[1].clone();
 
-    blackPiecesImages[9] = $("<img/>");
-    blackPiecesImages[9].attr('src',"icons/pawn_black.png");
+    $blackPiecesImages[9] = $("<img/>");
+    $blackPiecesImages[9].attr('src',"icons/pawn_black.png");
 
     for (let i = 10; i <= 16; i++) {
-        blackPiecesImages[i] = blackPiecesImages[9].clone();
+        $blackPiecesImages[i] = $blackPiecesImages[9].clone();
 
     }
 
     for (let i = 1; i <= 16; i++) {
-        blackPiecesImages[i].addClass("icon");
-        whitePiecesImages[i].addClass("icon");
-        blackPiecesImages[i].attr("data-id",`black-${i}`);
-        whitePiecesImages[i].attr("data-id",`white-${i}`);
+        $blackPiecesImages[i].addClass("icon");
+        $whitePiecesImages[i].addClass("icon");
+        $blackPiecesImages[i].attr("data-id",`black-${i}`);
+        $whitePiecesImages[i].attr("data-id",`white-${i}`);
     }
-    return [whitePiecesImages, blackPiecesImages]
+
+    return [$whitePiecesImages, $blackPiecesImages]
 }
 
     // Generate general HTML structure of the page
     generateMainStructure(){
-        let player_top_container = $('<div/>');
-        $("body").append(player_top_container);
-        player_top_container.addClass("player-top-container");
+        let $player_top_container = $('<div/>');
+        $("body").append($player_top_container);
+        $player_top_container.addClass("player-top-container");
 
-        let player_top_text = $('<div/>')
-        player_top_text.html("Player-top's captures")
-                       .appendTo(player_top_container)
+        let $player_top_text = $('<div/>')
+        $player_top_text.html("Player-top's captures")
+                       .appendTo($player_top_container)
                        .addClass("player-top-text")
 
-        let player_top_captures = []
+        let $player_top_captures = []
         for(let i = 0; i<4; i++){
-            if (!player_top_captures[i]) player_top_captures[i] = []
+            if (!$player_top_captures[i]) $player_top_captures[i] = []
             for(let j = 0; j<4; j++){
-                player_top_captures[i][j] = $('<div/>');
+                $player_top_captures[i][j] = $('<div/>');
             
-                player_top_container.append(player_top_captures[i][j])
+                $player_top_container.append($player_top_captures[i][j])
             
-                player_top_captures[i][j].attr('data-i', i);
-                player_top_captures[i][j].attr('data-j', j);
+                $player_top_captures[i][j].attr('data-i', i);
+                $player_top_captures[i][j].attr('data-j', j);
             }
         }
 
-        let chess_table = $('<div/>');
-        $("body").append(chess_table);
-        chess_table.addClass("chess-table");
+        let $chess_table = $('<div/>');
+        $("body").append($chess_table);
+        $chess_table.addClass("chess-table");
 
-        let player_bottom_container = $('<div/>');
-        $("body").append(player_bottom_container);
-        player_bottom_container.addClass("player-bottom-container");
+        let $player_bottom_container = $('<div/>');
+        $("body").append($player_bottom_container);
+        $player_bottom_container.addClass("player-bottom-container");
 
-        let player_bottom_text = $('<div/>')
-        player_bottom_text.html("Player-bottom's captures");
-        player_bottom_text.appendTo(player_bottom_container);
-        player_bottom_text.addClass("player-bottom-text")
+        let $player_bottom_text = $('<div/>')
+        $player_bottom_text.html("Player-bottom's captures");
+        $player_bottom_text.appendTo($player_bottom_container);
+        $player_bottom_text.addClass("player-bottom-text")
 
-        let player_bottom_captures = []
+        let $player_bottom_captures = []
         for(let i = 0; i<4; i++){
-            if (!player_bottom_captures[i]) player_bottom_captures[i] = []
+            if (!$player_bottom_captures[i]) $player_bottom_captures[i] = []
             for(let j = 0; j<4; j++){
-                player_bottom_captures[i][j] = $('<div/>');
+                $player_bottom_captures[i][j] = $('<div/>');
             
-                player_bottom_container.append(player_bottom_captures[i][j])
+                $player_bottom_container.append($player_bottom_captures[i][j])
             
-                player_bottom_captures[i][j].attr('data-i', i);
-                player_bottom_captures[i][j].attr('data-j', j);
+                $player_bottom_captures[i][j].attr('data-i', i);
+                $player_bottom_captures[i][j].attr('data-j', j);
             }
         }
 
-        let chess_table_container = $('.chess-table')
+        let $chess_table_container = $('.chess-table')
     
         // Top container - create
-        let top_container = $('<div/>');
-        chess_table_container.append(top_container);
-        top_container.addClass("top-container")
+        let $top_container = $('<div/>');
+        $chess_table_container.append($top_container);
+        $top_container.addClass("top-container")
     
         // Left container - create
-        let left_container = $('<div/>');
-        chess_table_container.append(left_container);
-        left_container.addClass("left-container")
+        let $left_container = $('<div/>');
+        $chess_table_container.append($left_container);
+        $left_container.addClass("left-container")
     
         // Right container - create
-        let right_container = $('<div/>');
-        chess_table_container.append(right_container);
-        right_container.addClass("right-container")
+        let $right_container = $('<div/>');
+        $chess_table_container.append($right_container);
+        $right_container.addClass("right-container")
     
         // Bottom container - create
-        let bottom_container = $('<div/>');
-        chess_table_container.append(bottom_container);
-        bottom_container.addClass("bottom-container")
+        let $bottom_container = $('<div/>');
+        $chess_table_container.append($bottom_container);
+        $bottom_container.addClass("bottom-container")
     
         // Table container - create
-        let table_container = $('<div/>');
-        chess_table_container.append(table_container);
-        table_container.addClass("table-container")
-        return [player_top_captures, player_bottom_captures]
+        let $table_container = $('<div/>');
+        $chess_table_container.append($table_container);
+        $table_container.addClass("table-container")
+        return [$player_top_captures, $player_bottom_captures]
     }
 
     // Populate top, bottom, left and right columns
     populateAdjacentColumns(){
-        let top_columns = []
-        let bottom_columns = []
-        let left_rows = []
-        let right_rows = []
+        let $top_columns = []
+        let $bottom_columns = []
+        let $left_rows = []
+        let $right_rows = []
         let letter = "A"
         let number = 1
-        let top_parent = $('.top-container')
-        let bottom_parent = $('.bottom-container')
-        let left_parent = $('.left-container')
-        let right_parent = $('.right-container')
+        let $top_parent = $('.top-container')
+        let $bottom_parent = $('.bottom-container')
+        let $left_parent = $('.left-container')
+        let $right_parent = $('.right-container')
         for (let i = 0; i < 8; i++) {
-            top_columns[i] = $('<div/>');
-            bottom_columns[i] = $('<div/>');
-            left_rows[i] = $('<div/>')
-            right_rows[i] = $('<div/>')
+            $top_columns[i] = $('<div/>');
+            $bottom_columns[i] = $('<div/>');
+            $left_rows[i] = $('<div/>')
+            $right_rows[i] = $('<div/>')
     
-            top_columns[i].html(letter)
-            bottom_columns[i].html(letter)
-            left_rows[i].html(number)
-            right_rows[i].html(number)
+            $top_columns[i].html(letter)
+            $bottom_columns[i].html(letter)
+            $left_rows[i].html(number)
+            $right_rows[i].html(number)
     
             letter = String.fromCharCode(letter.charCodeAt(0) + 1)
             number = number + 1
     
-            top_parent.append(top_columns[i]);
-            bottom_parent.append(bottom_columns[i]);
-            left_parent.append(left_rows[i])
-            right_parent.append(right_rows[i])
+            $top_parent.append($top_columns[i]);
+            $bottom_parent.append($bottom_columns[i]);
+            $left_parent.append($left_rows[i])
+            $right_parent.append($right_rows[i])
     
-            top_columns[i].addClass("top-column")
-            bottom_columns[i].addClass("bottom-column")
-            left_rows[i].addClass("left-row")
-            right_rows[i].addClass("right-row")
+            $top_columns[i].addClass("top-column")
+            $bottom_columns[i].addClass("bottom-column")
+            $left_rows[i].addClass("left-row")
+            $right_rows[i].addClass("right-row")
         }
     }
 
     // Populate boxes of chess table
     populateTableBoxes(){
         let $table_parent = $('.table-container')
-        let boxes = []
+        let $boxes = []
     
         for (let i = 0; i<8; i++){
-            if (!boxes[i]) boxes[i] = []
+            if (!$boxes[i]) $boxes[i] = []
     
             for (let j = 0; j < 8; j++) {
                 
-                boxes[i][j] = $('<div/>');
+                $boxes[i][j] = $('<div/>');
             
-                $table_parent.append(boxes[i][j])
+                $table_parent.append($boxes[i][j])
             
-                boxes[i][j].addClass('box')
+                $boxes[i][j].addClass('box')
             
-                boxes[i][j].attr('data-i', i);
-                boxes[i][j].attr('data-j', j);
+                $boxes[i][j].attr('data-i', i);
+                $boxes[i][j].attr('data-j', j);
                 if(i % 2 === 0){
                     if(j % 2 === 0){
-                        boxes[i][j].addClass('dark-box')
+                        $boxes[i][j].addClass('dark-box')
                     }
                     else
-                        boxes[i][j].addClass('light-box')
+                        $boxes[i][j].addClass('light-box')
                 }
                 else{
                     if(j % 2 === 0){
-                        boxes[i][j].addClass('light-box')
+                        $boxes[i][j].addClass('light-box')
                     }
                     else
-                        boxes[i][j].addClass('dark-box')
+                        $boxes[i][j].addClass('dark-box')
                 }
             }
         }
-    return boxes;
+        $(".box").droppable({
+            drop: event => {
+                let $final_i = $(event.target).attr("data-i")
+                let $final_j = $(event.target).attr("data-j")
+                if($(event.target).hasClass("possible-move")){
+                    this.movePiece(parseInt($final_i), parseInt($final_j))
+                }
+                else if ($(event.target).hasClass("possible-attack")){
+                    this.attackPiece($final_i, $final_j)
+                }
+
+                this.chess_matrix[$final_i][$final_j].img.attr('style', 'position: relative;')
+            }
+        })
+        $(".box").droppable("disable")
+
+
+    return $boxes;
     }
     // Generate the chess table (structure + populate)
     generateChessTable(){
         let captures = this.generateMainStructure();
-        let player_top_captures = captures[0];
-        let player_bottom_captures = captures[1];
+        let $player_top_captures = captures[0];
+        let $player_bottom_captures = captures[1];
 
         this.populateAdjacentColumns();
 
-        let boxes = this.populateTableBoxes();
+        let $boxes = this.populateTableBoxes();
 
-        return [boxes, player_top_captures, player_bottom_captures];
+        return [$boxes, $player_top_captures, $player_bottom_captures];
     }
     
 }
