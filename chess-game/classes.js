@@ -1,6 +1,48 @@
 
 class ChessTable{
     chess_matrix = []
+    $boxes = []
+    player_top_captures = []
+    player_bottom_captures = []
+    player_top = []
+    player_bottom = []
+    player_top_pieces = []
+    player_bottom_pieces = []
+
+    top_player_moves = 0
+    bottom_player_moves = 0
+    current_user = "white"
+    $textMessage = ""
+
+    constructor(){
+        let matrix_collection = this.generateChessTable();
+        this.$boxes = matrix_collection[0]
+        this.player_top_captures = matrix_collection[1]
+        this.player_bottom_captures = matrix_collection[2]
+
+        let players_info  = this.populateChessTable()
+        this.player_top = players_info[0]
+        this.player_bottom = players_info[1]
+        this.player_top_pieces = players_info[2]
+        this.player_bottom_pieces = players_info[3]
+
+        this.createMatrix(this.player_top_pieces, this.player_bottom_pieces, this.$boxes)
+
+        this.$textMessage = $('<div/>');
+        this.$textMessage.addClass("player-order")
+        $("body").append(this.$textMessage)
+
+        if(this.player_top == 1){
+            this.$textMessage.html("It's player top's turn")
+        }
+        else{
+            this.$textMessage.html("It's player bottom's turn")
+
+        }
+
+        $(".box").click(event => {this.pieceActionsOnClick(event)})
+
+    }
 
     // Creates base matrix
     createMatrix(player_top_pieces, player_bottom_pieces, boxes){
@@ -26,7 +68,7 @@ class ChessTable{
     }
 
     // What to do when a piece is clicked
-    pieceActionsOnClick(event, player_top_value, player_bottom_value){
+    pieceActionsOnClick(event){
         let i = event.currentTarget.dataset.i
         let j = event.currentTarget.dataset.j
         
@@ -46,24 +88,24 @@ class ChessTable{
             // this.changePlayer();
         }
         // If a box with a piece is clicked, show possible moves
-        else if(this.chess_matrix[i][j] != null && this.chess_matrix[i][j].color === current_user){
+        else if(this.chess_matrix[i][j] != null && this.chess_matrix[i][j].color === this.current_user){
             this.showPossibleMoves(event.currentTarget);
         }
 
     } 
 
     changePlayer(){
-        if(current_user === "white"){
-            current_user = "black";
+        if(this.current_user === "white"){
+            this.current_user = "black";
         }
         else{
-            current_user = "white";
+            this.current_user = "white";
         }
 
-        if((current_user === "black" && player_top ===2) || (current_user === "white" && player_top === 1))
-            textMessage.html("It's player top's turn")
-        else if((current_user === "black" && player_bottom === 2) || (current_user === "white" && player_bottom === 1))
-            textMessage.html("It's player bottom's turn")
+        if((this.current_user === "black" && this.player_top ===2) || (this.current_user === "white" && this.player_top === 1))
+            this.$textMessage.html("It's player top's turn")
+        else if((this.current_user === "black" && this.player_bottom === 2) || (this.current_user === "white" && this.player_bottom === 1))
+            this.$textMessage.html("It's player bottom's turn")
     }
 
     getCurrentPieceCoordinates(){
@@ -82,11 +124,11 @@ class ChessTable{
         this.chess_matrix[final_i][final_j] = this.chess_matrix[initial_i][initial_j]
         this.chess_matrix[initial_i][initial_j] = null
 
-        $boxes[final_i][final_j].append(this.chess_matrix[final_i][final_j].img)
+        this.$boxes[final_i][final_j].append(this.chess_matrix[final_i][final_j].img)
 
         this.chess_matrix[final_i][final_j].number_of_moves ++;
 
-        $boxes[final_i][final_j].children().draggable("disable");
+        this.$boxes[final_i][final_j].children().draggable("disable");
         this.clearBoxesBg();
         this.changePlayer();
     }
@@ -102,11 +144,11 @@ class ChessTable{
         let player_table
         for(let i = 0; i <4 && !element_found; i++){
             for(let j = 0; j<4 && !element_found; j++){
-                if((current_user === "black" && player_top ===2) || (current_user === "white" && player_top === 1)){
-                    player_table = player_top_captures
+                if((this.current_user === "black" && this.player_top ===2) || (this.current_user === "white" && this.player_top === 1)){
+                    player_table = this.player_top_captures
                 }
                 else {
-                    player_table = player_bottom_captures
+                    player_table = this.player_bottom_captures
                 }
                 if(player_table[i][j].children().length === 0){
                     player_table[i][j].append(this.chess_matrix[final_i][final_j].img)
@@ -118,9 +160,9 @@ class ChessTable{
         this.chess_matrix[final_i][final_j] = null
         this.chess_matrix[final_i][final_j] = this.chess_matrix[initial_i][initial_j]
         this.chess_matrix[initial_i][initial_j] = null
-        $boxes[final_i][final_j].append(this.chess_matrix[final_i][final_j].img)
+        this.$boxes[final_i][final_j].append(this.chess_matrix[final_i][final_j].img)
         this.chess_matrix[final_i][final_j].number_of_moves ++;
-        $boxes[final_i][final_j].children().draggable("disable");
+        this.$boxes[final_i][final_j].children().draggable("disable");
         this.clearBoxesBg();
         this.changePlayer();
     }
@@ -149,8 +191,8 @@ class ChessTable{
     }
     // Color current clicked element
     colorCurrentElement(i, j){
-        $boxes[i][j].addClass("current-move");
-        $boxes[i][j].children().draggable("enable");
+        this.$boxes[i][j].addClass("current-move");
+        this.$boxes[i][j].children().draggable("enable");
     }
 
     // Color possible attack or move
@@ -158,16 +200,16 @@ class ChessTable{
         let added_class
         if(type === "move") added_class = "possible-move"
         else if (type === "attack") added_class = "possible-attack"
-        $boxes[i][j].addClass(added_class)
+        this.$boxes[i][j].addClass(added_class)
         $(".possible-move, .possible-attack").droppable('enable');
     }
     // Verify if piece exists at certain place
     pieceExistsAt(i,j){
-        return matrix[i][j] 
+        return this.chess_matrix[i][j] 
     }
 
     isOpponentPiece(possible_attack_i, possible_attack_j){
-        return !(this.chess_matrix[possible_attack_i][possible_attack_j].color === current_user)
+        return !(this.chess_matrix[possible_attack_i][possible_attack_j].color === this.current_user)
     }
 
     showPossibleMoves(box){
@@ -212,13 +254,13 @@ class ChessTable{
                     // Pawn is in initial position
                     if (element.number_of_moves === 0){
 
-                        if(element.player === player_top){
+                        if(element.player === this.player_top){
                             possible_move_i = parseInt(i) + parseInt(1)
                             possible_move_j = parseInt(j) 
                             possible_move_i_2 = parseInt(i) + parseInt(2)
                             possible_move_j_2 = parseInt(j) 
                         }
-                        else if(element.player === player_bottom){
+                        else if(element.player === this.player_bottom){
                             possible_move_i = parseInt(i) - parseInt(1)
                             possible_move_j = parseInt(j) 
                             possible_move_i_2 = parseInt(i) - parseInt(2)
@@ -235,11 +277,11 @@ class ChessTable{
                 }
                     break;
                 case "front-1":
-                    if(element.player === player_top){
+                    if(element.player === this.player_top){
                         possible_move_i = parseInt(i) + parseInt(1)
                         possible_move_j = parseInt(j)
                     }
-                    else if(element.player === player_bottom){
+                    else if(element.player === this.player_bottom){
                         possible_move_i = parseInt(i) - parseInt(1)
                         possible_move_j = parseInt(j)
                     }
@@ -392,11 +434,11 @@ class ChessTable{
             let possible_attack_i, possible_attack_j
 
             if(possible_attacks[k] === "leftdiag-1"){
-                if(element.player === player_top){
+                if(element.player === this.player_top){
                     possible_attack_i = parseInt(i) + parseInt(1)
                     possible_attack_j = parseInt(j) + parseInt(1)
                 }
-                else if(element.player === player_bottom){
+                else if(element.player === this.player_bottom){
                     possible_attack_i = parseInt(i) - parseInt(1)
                     possible_attack_j = parseInt(j) - parseInt(1)
                 }
@@ -408,11 +450,11 @@ class ChessTable{
                 }
             }
             else if (possible_attacks[k] === "rightdiag-1"){
-                if(element.player === player_top){
+                if(element.player === this.player_top){
                     possible_attack_i = parseInt(i) + parseInt(1)
                     possible_attack_j = parseInt(j) - parseInt(1)
                 }
-                else if(element.player === player_bottom){
+                else if(element.player === this.player_bottom){
                     possible_attack_i = parseInt(i) - parseInt(1)
                     possible_attack_j = parseInt(j) + parseInt(1)
                 }
