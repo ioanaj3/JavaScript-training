@@ -25,5 +25,13 @@
 
 let base_table = new ChessTable()
 
+$.ajax({
+    method: "POST",
+    url: "https://chess.thrive-dev.bitstoneint.com/wp-json/chess-api/game",
+    data:{name:"ioana-post-2"}
+}).done(
+    console.log("cool story bro")
+)
+
 
 
