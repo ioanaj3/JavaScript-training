@@ -15,23 +15,24 @@ class ChessTable{
     $textMessage = ""
     setup = ""
     delivery = ""
+    random_number
+
 
     constructor(){
         [this.$boxes, this.player_top_captures, this.player_bottom_captures] = this.generateChessTable()
         $(".start-game-button").click(event => {
                 this.startGame();
         })
+        this.getRandomNumber()
     }
+
     startGame(){
         $(".start-game-button").remove();
-
         let $start_joke_generator = $('<span/>');
         $(".buttons-contanier").append($start_joke_generator);
         $start_joke_generator.addClass("start-joke-generator");
         $start_joke_generator.text("Start joke Generator!")
 
-        console.log(this.populateChessTable())
-        // [this.player_top, this.player_bottom, this.player_top_pieces, this.player_bottom_pieces] = this.populateChessTable()
         let players_info  = this.populateChessTable()
         this.player_top = players_info[0]
         this.player_bottom = players_info[1]
@@ -68,16 +69,13 @@ class ChessTable{
 
         this.setup = $("<div/>");
         $(".buttons-contanier").append(this.setup);
-        this.setup.text("Setup")
+        this.setup.text("")
         this.setup.hide();
-
 
         this.delivery = $("<div/>");
         $(".buttons-contanier").append(this.delivery);
-        this.delivery.text("Delivery")
+        this.delivery.text("")
         this.delivery.hide();
-        
-
     }
     makeJoke(){
         this.setup.show();
@@ -87,7 +85,6 @@ class ChessTable{
             method: "GET",
             url: "https://sv443.net/jokeapi/v2/joke/Any?type=twopart",
         }).done(response => {
-            console.log(this.setup)
             this.setup.text(response.setup);
             this.delivery.text(response.delivery)
         })
@@ -514,21 +511,23 @@ class ChessTable{
             }
         }
     }
+
+    getRandomNumber(){
+        // let number
+        $.ajax({
+            method: "GET",
+            url: "http://numbersapi.com/random/trivia?json&min=10&max=100",
+        }).done(response => {
+            this.random_number = parseInt(response.number);
+        })
+    }
     // Assign color to top/bottom player
     assignColorToPlayers(whitePieces, blackPieces){
         let player_top, player_bottom
     
         let player_top_pieces, player_bottom_pieces
-        let random_number
 
-        $.ajax({
-            method: "GET",
-            url: "http://numbersapi.com/random/trivia?json&min=10&max=100",
-        }).done(function(response){
-            random_number = parseInt(response.number);
-        })
-
-        if (random_number % 2 === 0) {
+        if (this.random_number % 2 === 0) {
             player_top = 1
             whitePieces.forEach(whitePiece => whitePiece.player = player_top)
             player_top_pieces = whitePieces;
