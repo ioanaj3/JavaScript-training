@@ -16,22 +16,144 @@ class ChessTable{
     setup = ""
     delivery = ""
     random_number
-
+    game_type = ""
+    total_moves = 0
+    game_ID 
 
     constructor(){
         [this.$boxes, this.player_top_captures, this.player_bottom_captures] = this.generateChessTable()
-        $(".start-game-button").click(event => {
+        $("#start-offline-game-button").click(event => {
+                this.game_type = "offline"
                 this.startGame();
         })
+
+        $("#start-online-game-button").click(event => {
+            this.game_type = "online"
+            this.startOnlineGame();
+            setInterval(this.getOnlineMove.bind(this), 3000);
+        })
+
         this.getRandomNumber()
     }
 
+    resetOnlineMoves(){
+        $.ajax({
+            method: "POST",
+            url: "https://chess.thrive-dev.bitstoneint.com/wp-json/chess-api/game/" + this.game_ID,
+            data:{reset:1}
+        })
+            .done(
+                console.log("Game move reset was successful!")
+            )
+    }
+
+    getOnlineMove(){
+        let black_initial_i, black_initial_j, black_final_i, black_final_j
+        
+        // If it's black's turn
+        if(this.total_moves % 2 !== 0){
+            $.ajax({
+                method: "GET",
+                url: "https://chess.thrive-dev.bitstoneint.com/wp-json/chess-api/game/" + this.game_ID
+                }).done( response => {
+                    // Daca a fost inregistrata miscare pt black
+                    if(response.moves.length % 2 === 0){
+                        response.moves.forEach(move => {
+                            black_initial_i = move.from.x;
+                            black_initial_j = move.from.y;
+                            black_final_i = move.to.x;
+                            black_final_j = move.to.y;
+                        });
+                        this.colorCurrentElement(black_initial_i, black_initial_j);
+                        this.showPossibleMovesAttacks(black_initial_i, black_initial_j);
+
+                        if(this.canMoveTo(black_final_i, black_final_j)){
+                            this.movePiece(black_final_i, black_final_j);
+                            this.total_moves++;
+                        }
+                        else if(this.canAttack(black_final_i, black_final_j)){
+                            this.attackPiece(black_final_i, black_final_j)
+                            this.total_moves++;
+                        }
+                        console.log("Move was retrieved from served and applied in game!")
+                    }
+                })
+        }
+    }
+
+    sendOnlineMove(from_x, from_y, to_x, to_y){
+        $.ajax({
+        method: "POST",
+        url: "https://chess.thrive-dev.bitstoneint.com/wp-json/chess-api/game/" + this.game_ID,
+        data:{move:{from: {x:from_x, y:from_y}, to:{x:to_x,y:to_y}}
+                }
+        }).done(
+        console.log("Move was sent to server!")
+        )
+        this.total_moves++;
+    }
+
+    showAvailableGame(){
+        let options = []
+        let i = 0
+        let $select = $("#game")
+        $.ajax({
+            method: "GET",
+            url: "https://chess.thrive-dev.bitstoneint.com/wp-json/chess-api/game"
+            }).done(response => {
+                response.forEach(game =>{
+                    options[i] = $('<option/>');
+                    options[i].attr('value', game.ID)
+                              .text(game.ID + " - " + game.post_title)
+                              .appendTo($select);
+                    i++;
+                })
+            })
+    }
+
+    startOnlineGame(){
+        $("#start-offline-game-button").remove();
+        $("#start-online-game-button").remove();
+        let $form = $('<form/>');
+            $("#buttons-contanier").append($form);
+            
+            let $label = $('<label/>')
+            $label.attr('for', "game")
+                  .text("Choose the game you want to enter")
+                  .appendTo($form);
+
+            let $select = $('<select/>');
+            $select.attr("name", "game")
+                   .attr("id", "game")
+                   .appendTo($form);
+
+            this.showAvailableGame();
+
+            let $enter_online_game = $('<div/>');
+            $enter_online_game.attr('id', 'enter-online-game')
+                              .text("Enter ONLINE game")
+                              .appendTo($("#buttons-contanier"))
+                              .click(event => {
+                                this.game_ID = parseInt($("#game option:selected").html())
+                                this.startGame();
+                                this.resetOnlineMoves();
+                              });
+    }
+
+    // Start the game in OFFLINE mode
     startGame(){
-        $(".start-game-button").remove();
-        let $start_joke_generator = $('<span/>');
-        $(".buttons-contanier").append($start_joke_generator);
-        $start_joke_generator.addClass("start-joke-generator");
-        $start_joke_generator.text("Start joke Generator!")
+        $("#start-offline-game-button").remove();
+        $("#start-online-game-button").remove();
+
+        if(this.game_type === "offline"){
+            let $start_joke_generator = $('<span/>');
+            $start_joke_generator.attr('id', "start-joke-generator")
+                                 .text("Start joke Generator!")
+                                 .appendTo($("#buttons-contanier"));
+            $("#start-joke-generator").click(event => {
+                this.startJokeGenerator();
+            })
+        }
 
         let players_info  = this.populateChessTable()
         this.player_top = players_info[0]
@@ -42,41 +164,40 @@ class ChessTable{
         this.createMatrix(this.player_top_pieces, this.player_bottom_pieces, this.$boxes)
 
         this.$textMessage = $('<div/>');
-        this.$textMessage.addClass("player-order")
-        $("body").append(this.$textMessage)
+        this.$textMessage.attr('id', "player-order")
+                         .appendTo($("body"))
 
         if(this.player_top == 1){
             this.$textMessage.html("It's player top's turn")
         }
         else{
             this.$textMessage.html("It's player bottom's turn")
-
         }
-        
-        $(".start-joke-generator").click(event => {
-            this.startJokeGenerator();
-    })
 
         $(".box").click(event => {this.pieceActionsOnClick(event)})
     }
 
-
+    // Create HTML structure for the Joke Generator
     startJokeGenerator(){
-        $(".start-joke-generator").remove();
+        $("#start-joke-generator").remove();
         let message = $("<div/>");
-        $(".buttons-contanier").append(message);
         message.text("Here's a joke for you! Make a move, and the kickline will punch!")
+               .appendTo($("#buttons-contanier"))
 
         this.setup = $("<div/>");
-        $(".buttons-contanier").append(this.setup);
-        this.setup.text("")
-        this.setup.hide();
+        this.setup.attr('id', "setup")
+                  .text("")
+                  .hide()
+                  .appendTo("#buttons-contanier")
 
         this.delivery = $("<div/>");
-        $(".buttons-contanier").append(this.delivery);
-        this.delivery.text("")
-        this.delivery.hide();
+        this.delivery.attr('id', "delivery")
+                     .text("")
+                     .hide()
+                     .appendTo($("#buttons-contanier"));
     }
+
+    // AJAX GET request to get a joke from the Joke API
     makeJoke(){
         this.setup.show();
         this.delivery.hide();
@@ -115,7 +236,8 @@ class ChessTable{
 
     // What to do when a piece is clicked
     pieceActionsOnClick(event){
-        let i = event.currentTarget.dataset.i
+        if(this.game_type === "offline" || (this.game_type === "online" && this.current_user === "white")){
+            let i = event.currentTarget.dataset.i
         let j = event.currentTarget.dataset.j
         
         // If a box with no property is clicked, clear all colors
@@ -133,9 +255,15 @@ class ChessTable{
         else if(this.chess_matrix[i][j] != null && this.chess_matrix[i][j].color === this.current_user){
             this.showPossibleMoves(event.currentTarget);
         }
+        }
+        // else if(this.game_type === "online" && this.current_user === "black"){
+            
+        // }
+        
 
     } 
 
+    // Change turns between players
     changePlayer(){
         if(this.current_user === "white"){
             this.current_user = "black";
@@ -150,6 +278,7 @@ class ChessTable{
             this.$textMessage.html("It's player bottom's turn")
     }
 
+    // Get coordinates of current clicked piece
     getCurrentPieceCoordinates(){
         let $current_box = $(".current-move")
     
@@ -171,11 +300,18 @@ class ChessTable{
         this.chess_matrix[final_i][final_j].number_of_moves ++;
 
         this.$boxes[final_i][final_j].children().draggable("disable");
+        if(this.current_user === "white" && this.game_type === "online"){
+            this.sendOnlineMove(initial_i, initial_j, final_i, final_j);
+        }
         this.resetTable();
         this.changePlayer();
-        this.delivery.show();
+        if(this.game_type === "offline"){
+            this.delivery.show();
+        }
+       
     }
 
+    // Attack piece
     attackPiece(final_i, final_j){
         let current_piece = this.getCurrentPieceCoordinates()
         let initial_i = current_piece[0];
@@ -206,9 +342,15 @@ class ChessTable{
         this.$boxes[final_i][final_j].append(this.chess_matrix[final_i][final_j].img)
         this.chess_matrix[final_i][final_j].number_of_moves ++;
         this.$boxes[final_i][final_j].children().draggable("disable");
+        if(this.current_user === "white" && this.game_type === "online"){
+            this.sendOnlineMove(initial_i, initial_j, final_i, final_j);
+        }  
         this.resetTable();
         this.changePlayer();
-        this.delivery.show();
+        if(this.game_type === "offline"){
+            this.delivery.show();
+        }
+          
     }
 
     // Clear possible moves and current clicked item
@@ -226,7 +368,6 @@ class ChessTable{
 
     // Check if box is labeled as possible move
     canMoveTo(i,j) {
-        // return 
         return document.querySelector(`[data-i="${i}"][data-j="${j}"].possible-move`) !== null
     }
     canAttack(i,j){
@@ -234,8 +375,9 @@ class ChessTable{
     }
     // Color current clicked element
     colorCurrentElement(i, j){
-        this.$boxes[i][j].addClass("current-move");
-        this.$boxes[i][j].children().draggable("enable");
+        this.$boxes[i][j].addClass("current-move")
+                         .children()
+                         .draggable("enable");
     }
 
     // Color possible attack or move
@@ -250,11 +392,12 @@ class ChessTable{
     pieceExistsAt(i,j){
         return this.chess_matrix[i][j] 
     }
-
+    // Verify if certain piece is from opponent
     isOpponentPiece(possible_attack_i, possible_attack_j){
         return !(this.chess_matrix[possible_attack_i][possible_attack_j].color === this.current_user)
     }
 
+    // Show possible moves and attacks
     showPossibleMoves(box){
 
         let i = parseInt(box.dataset.i)
@@ -272,13 +415,17 @@ class ChessTable{
             // Color the piece's possible moves
             else{
                 this.showPossibleMovesAttacks(i, j);
-                this.makeJoke();
+                if(this.game_type === "offline"){
+                    this.makeJoke();
+                }
             }
         }
         // Color the piece's possible moves
         else{
             this.showPossibleMovesAttacks(i, j);
-            this.makeJoke();
+            if(this.game_type === "offline"){
+                this.makeJoke();
+            }        
         }  
     }
 
@@ -512,6 +659,7 @@ class ChessTable{
         }
     }
 
+    // AJAX GET request for a random number from the API
     getRandomNumber(){
         // let number
         $.ajax({
@@ -521,11 +669,15 @@ class ChessTable{
             this.random_number = parseInt(response.number);
         })
     }
+
     // Assign color to top/bottom player
     assignColorToPlayers(whitePieces, blackPieces){
         let player_top, player_bottom
     
         let player_top_pieces, player_bottom_pieces
+        if(this.game_type === "online") {
+            this.random_number = 2
+        }
 
         if (this.random_number % 2 === 0) {
             player_top = 1
@@ -657,10 +809,10 @@ class ChessTable{
     }
 
     for (let i = 1; i <= 16; i++) {
-        $blackPiecesImages[i].addClass("icon");
-        $whitePiecesImages[i].addClass("icon");
-        $blackPiecesImages[i].attr("data-id",`black-${i}`);
-        $whitePiecesImages[i].attr("data-id",`white-${i}`);
+        $blackPiecesImages[i].addClass("icon")
+                             .attr("data-id",`black-${i}`);
+        $whitePiecesImages[i].addClass("icon")
+                             .attr("data-id",`white-${i}`);
     }
 
     return [$whitePiecesImages, $blackPiecesImages]
@@ -671,41 +823,41 @@ class ChessTable{
 
         // Container for player-top's information
         let $player_top_container = $('<div/>');
-        $("body").append($player_top_container);
-        $player_top_container.addClass("player-top-container");
+        $player_top_container.attr('id', "player-top-container")
+                             .appendTo($("body"));
 
         let $player_top_text = $('<div/>')
         $player_top_text.html("Player-top's captures")
-                       .appendTo($player_top_container)
-                       .addClass("player-top-text")
+                        .attr('id', "player-top-text")
+                        .appendTo($player_top_container);
+
 
         let $player_top_captures = []
         for(let i = 0; i<4; i++){
             if (!$player_top_captures[i]) $player_top_captures[i] = []
             for(let j = 0; j<4; j++){
                 $player_top_captures[i][j] = $('<div/>');
-            
-                $player_top_container.append($player_top_captures[i][j])
-            
-                $player_top_captures[i][j].attr('data-i', i);
-                $player_top_captures[i][j].attr('data-j', j);
+                        
+                $player_top_captures[i][j].attr('data-i', i)
+                                          .attr('data-j', j)
+                                          .appendTo($player_top_container);
             }
         }
 
         // Container for the chess table
         let $chess_table = $('<div/>');
-        $("body").append($chess_table);
-        $chess_table.addClass("chess-table");
+        $chess_table.attr('id', "chess-table")
+                    .appendTo($("body"))
 
         // Container for player-bottom's information
         let $player_bottom_container = $('<div/>');
-        $("body").append($player_bottom_container);
-        $player_bottom_container.addClass("player-bottom-container");
+        $player_bottom_container.attr('id', "player-bottom-container")
+                                .appendTo($("body"));
 
         let $player_bottom_text = $('<div/>')
-        $player_bottom_text.html("Player-bottom's captures");
-        $player_bottom_text.appendTo($player_bottom_container);
-        $player_bottom_text.addClass("player-bottom-text")
+        $player_bottom_text.html("Player-bottom's captures")
+                           .attr('id',"player-bottom-text")
+                           .appendTo($player_bottom_container)
 
         let $player_bottom_captures = []
         for(let i = 0; i<4; i++){
@@ -713,49 +865,54 @@ class ChessTable{
             for(let j = 0; j<4; j++){
                 $player_bottom_captures[i][j] = $('<div/>');
             
-                $player_bottom_container.append($player_bottom_captures[i][j])
-            
-                $player_bottom_captures[i][j].attr('data-i', i);
-                $player_bottom_captures[i][j].attr('data-j', j);
+                $player_bottom_captures[i][j].attr('data-i', i)
+                                             .attr('data-j', j)
+                                             .appendTo( $player_bottom_container);
             }
         }
         // Container for buttons
         let $buttons_container = $('<div/>');
-        $("body").append($buttons_container);
-        $buttons_container.addClass("buttons-contanier");
-        // $buttons_container.html("hie")
+        $buttons_container.appendTo($("body"))
+                          .attr('id', "buttons-contanier");
 
-        let $start_game_button = $('<span/>');
-        $(".buttons-contanier").append($start_game_button);
-        $start_game_button.addClass("start-game-button");
-        $start_game_button.text("Start game NOW!")
+        //Start offline game button
+        let $start_offline_game_button = $('<span/>');
+        $("#buttons-contanier").append($start_offline_game_button);
+        $start_offline_game_button.attr('id', "start-offline-game-button")
+                                  .text("Start OFFLINE game!")
 
-        let $chess_table_container = $('.chess-table')
+        //Start online game button
+        let $start_online_game_button = $('<span/>');
+        $("#buttons-contanier").append($start_online_game_button);
+        $start_online_game_button.attr('id', "start-online-game-button")
+                                 .text("Start ONLINE game!");
+
+        let $chess_table_container = $('#chess-table')
     
         // Top container - create
         let $top_container = $('<div/>');
-        $chess_table_container.append($top_container);
-        $top_container.addClass("top-container")
+        $top_container.appendTo($chess_table_container)
+                        .attr('id',"top-container")
     
         // Left container - create
         let $left_container = $('<div/>');
-        $chess_table_container.append($left_container);
-        $left_container.addClass("left-container")
+        $left_container.appendTo($chess_table_container)
+                        .attr('id',"left-container")
     
         // Right container - create
         let $right_container = $('<div/>');
-        $chess_table_container.append($right_container);
-        $right_container.addClass("right-container")
+        $right_container.appendTo($chess_table_container)
+                        .attr('id', "right-container")
     
         // Bottom container - create
         let $bottom_container = $('<div/>');
-        $chess_table_container.append($bottom_container);
-        $bottom_container.addClass("bottom-container")
+        $bottom_container.appendTo($chess_table_container)
+                            .attr('id', "bottom-container")
     
         // Table container - create
         let $table_container = $('<div/>');
-        $chess_table_container.append($table_container);
-        $table_container.addClass("table-container")
+        $table_container.appendTo($chess_table_container)
+                        .attr('id', "table-container")
         return [$player_top_captures, $player_bottom_captures]
     }
 
@@ -767,39 +924,37 @@ class ChessTable{
         let $right_rows = []
         let letter = "A"
         let number = 1
-        let $top_parent = $('.top-container')
-        let $bottom_parent = $('.bottom-container')
-        let $left_parent = $('.left-container')
-        let $right_parent = $('.right-container')
+        let $top_parent = $('#top-container')
+        let $bottom_parent = $('#bottom-container')
+        let $left_parent = $('#left-container')
+        let $right_parent = $('#right-container')
         for (let i = 0; i < 8; i++) {
             $top_columns[i] = $('<div/>');
             $bottom_columns[i] = $('<div/>');
             $left_rows[i] = $('<div/>')
             $right_rows[i] = $('<div/>')
     
-            $top_columns[i].html(letter)
-            $bottom_columns[i].html(letter)
-            $left_rows[i].html(number)
-            $right_rows[i].html(number)
-    
             letter = String.fromCharCode(letter.charCodeAt(0) + 1)
             number = number + 1
-    
-            $top_parent.append($top_columns[i]);
-            $bottom_parent.append($bottom_columns[i]);
-            $left_parent.append($left_rows[i])
-            $right_parent.append($right_rows[i])
-    
-            $top_columns[i].addClass("top-column")
-            $bottom_columns[i].addClass("bottom-column")
-            $left_rows[i].addClass("left-row")
-            $right_rows[i].addClass("right-row")
+
+            $top_columns[i].html(letter)
+                            .attr('id', "top-column")
+                            .appendTo($top_parent)
+            $bottom_columns[i].html(letter)
+                                .attr('id', "bottom-column")
+                                .appendTo($bottom_parent)
+            $left_rows[i].html(number)
+                            .attr('id', "left-row")
+                            .appendTo($left_parent)
+            $right_rows[i].html(number)
+                            .attr('id', "right-row")
+                            .appendTo($right_parent) 
         }
     }
 
     // Populate boxes of chess table
     populateTableBoxes(){
-        let $table_parent = $('.table-container')
+        let $table_parent = $('#table-container')
         let $boxes = []
     
         for (let i = 0; i<8; i++){
@@ -809,12 +964,11 @@ class ChessTable{
                 
                 $boxes[i][j] = $('<div/>');
             
-                $table_parent.append($boxes[i][j])
             
-                $boxes[i][j].addClass('box')
-            
-                $boxes[i][j].attr('data-i', i);
-                $boxes[i][j].attr('data-j', j);
+                $boxes[i][j].appendTo($table_parent)
+                            .addClass('box')
+                            .attr('data-i', i)
+                            .attr('data-j', j);
                 if(i % 2 === 0){
                     if(j % 2 === 0){
                         $boxes[i][j].addClass('dark-box')
@@ -833,10 +987,10 @@ class ChessTable{
         }
         $(".box").droppable({
             drop: event => {
-                let $final_i = $(event.target).attr("data-i")
-                let $final_j = $(event.target).attr("data-j")
+                let $final_i = parseInt($(event.target).attr("data-i"))
+                let $final_j = parseInt($(event.target).attr("data-j"))
                 if($(event.target).hasClass("possible-move")){
-                    this.movePiece(parseInt($final_i), parseInt($final_j))
+                    this.movePiece($final_i, $final_j)
                 }
                 else if ($(event.target).hasClass("possible-attack")){
                     this.attackPiece($final_i, $final_j)
@@ -846,8 +1000,6 @@ class ChessTable{
             }
         })
         $(".box").droppable("disable")
-
-
     return $boxes;
     }
     // Generate the chess table (structure + populate)

@@ -33,5 +33,34 @@ let base_table = new ChessTable()
 //     console.log("cool story bro")
 // )
 
+// function makeMove(game_ID, from_x, from_y, to_x, to_y){
 
+//     $.ajax({
+//     method: "POST",
+//     url: "https://chess.thrive-dev.bitstoneint.com/wp-json/chess-api/game/" + game_ID,
+//     data:{move:{from: {x:from_x, y:from_y}, to:{x:to_x,y:to_y}}
+//             }
+//     }).done(
+//     console.log("cool story bro")
+//     )
+
+// }
+
+// function getMoves(game_ID){
+//     $.ajax({
+//         method: "GET",
+//         url: "https://chess.thrive-dev.bitstoneint.com/wp-json/chess-api/game/" + game_ID,
+//         }).done( response => {
+//             console.log(response.moves.length)
+//             response.moves.forEach(move => {
+//                 console.log("move from x " + move.from.x)
+//                 console.log("move from y " + move.from.y)
+//                 console.log("move to x " + move.to.x)
+//                 console.log("move to y " + move.to.y)
+//             });
+//         })
+//     }
+
+
+// getMoves(54)
 

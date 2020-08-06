@@ -17,7 +17,7 @@ body{
     width:100%;
 }
 
-.buttons-contanier{
+#buttons-contanier{
     grid-column-start: 1;
     grid-column-end: 4;
     grid-row-start:4 ;
@@ -26,7 +26,7 @@ body{
     padding-top: 40px;
 }
 
-.chess-table{
+#chess-table{
     grid-column-start: 2;
     grid-column-end: 3;
     grid-row-start:2 ;
@@ -40,7 +40,7 @@ body{
     font-weight: 500;
     font-size: 1.5em;
 }
-.player-top-container{
+#player-top-container{
     grid-column-start: 1;
     grid-column-end: 2;
     grid-row-start:1 ;
@@ -52,13 +52,13 @@ body{
     grid-template-rows: repeat(5, 1fr);
 }
 
-.player-top-text, .player-bottom-text{
+#player-top-text, #player-bottom-text{
     grid-column-start: 1;
     grid-column-end: 5;
     grid-row-start:1 ;
     grid-row-end:2 ;
 }
-.player-bottom-container{
+#player-bottom-container{
     grid-column-start: 3;
     grid-column-end: 4;
     grid-row-start:1 ;
@@ -69,7 +69,7 @@ body{
     grid-template-columns: repeat(4, 1fr);
     grid-template-rows: repeat(5, 1fr);
 }
-.top-container{
+#top-container{
     grid-row-start: 1;
     grid-row-end: 2;
     grid-column-start: 2;
@@ -81,7 +81,7 @@ body{
     grid-auto-flow: row;
     align-items: stretch;
 }
-.left-container{
+#left-container{
     grid-row-start: 2;
     grid-row-end: 3;
     grid-column-start: 1;
@@ -94,7 +94,7 @@ body{
     align-items: stretch;
 }
 
-.right-container{
+#right-container{
     grid-row-start: 2;
     grid-row-end: 3;
     grid-column-start: 3;
@@ -107,7 +107,7 @@ body{
     align-items: stretch;
 }
 
-.bottom-container{
+#bottom-container{
     grid-row-start: 3;
     grid-row-end: 4;
     grid-column-start: 2;
@@ -120,7 +120,7 @@ body{
     align-items: stretch;
 }
 
-.table-container{
+#table-container{
     grid-row-start: 2;
     grid-row-end: 3;
     grid-column-start: 2;
@@ -131,7 +131,7 @@ body{
     grid-template-rows: repeat(8, 1fr);
     align-items: stretch;
 }
-.top-column, .bottom-column, .left-row, .right-row, .box{
+#top-column, #bottom-column, #left-row, #right-row, .box{
     text-align: center;
     align-self: center;
     color: #333;
@@ -169,7 +169,7 @@ body{
     background-color: #D5C3CD;
 }
 
-.player-order{
+#player-order{
     /* grid-column-start: 2;
     grid-column-end: 3;
     grid-row-start:2;
@@ -186,7 +186,7 @@ body{
     background-color: #42101D;
 }
 
-.start-game-button, .start-joke-generator{
+#start-offline-game-button, #start-online-game-button, #start-joke-generator, #enter-online-game{
     background-color: #42101D;
     border: none;
     color: white;
@@ -195,12 +195,16 @@ body{
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
-    margin: 4px 2px;
+    margin: 25px 5px;
     cursor: pointer;
 }
 
-.setup, .delivery{
+#setup, #delivery{
     font-weight: 500;
     margin-top: 50px 0px;
+}
+
+#game{
+    margin-left: 10px;
 }
 
