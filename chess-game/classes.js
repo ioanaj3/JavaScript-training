@@ -913,7 +913,21 @@ class ChessTable{
         let $table_container = $('<div/>');
         $table_container.appendTo($chess_table_container)
                         .attr('id', "table-container")
+        
+        let my_github_link = $("<a/>")
+        my_github_link.attr('href', "https://github.com/ioanaj3/JavaScript-training/tree/master/chess-game")
+                    .attr('target', "_blank")
+                    .attr('id', "github-logo")
+                        .appendTo($("body"));
+
+        let git_logo = $("<img/>");
+        git_logo.attr('src', "icons/GitHub-Mark-64px.png")
+                .appendTo(my_github_link);
+        // $("#git-logo").click()        
+
         return [$player_top_captures, $player_bottom_captures]
+
+        
     }
 
     // Populate top, bottom, left and right columns
